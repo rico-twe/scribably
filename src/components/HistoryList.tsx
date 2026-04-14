@@ -1,0 +1,107 @@
+import type { HistoryEntry } from '../services/history'
+
+interface HistoryListProps {
+  entries: HistoryEntry[]
+  selectedId: string | null
+  onSelect: (id: string | null) => void
+  currentRawText: string | null
+  isViewingHistory: boolean
+}
+
+function formatRelativeTime(timestamp: number): string {
+  const diff = Date.now() - timestamp
+  const minutes = Math.floor(diff / 60_000)
+  if (minutes < 1) return 'Gerade eben'
+  if (minutes < 60) return `vor ${minutes} Min.`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `vor ${hours} Std.`
+  return new Date(timestamp).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })
+}
+
+function formatDuration(seconds: number): string {
+  const m = Math.floor(seconds / 60)
+  const s = Math.round(seconds % 60)
+  return m > 0 ? `${m}:${s.toString().padStart(2, '0')}` : `${s}s`
+}
+
+function truncate(text: string, maxLen: number): string {
+  if (text.length <= maxLen) return text
+  return text.slice(0, maxLen).trimEnd() + '\u2026'
+}
+
+export function HistoryList({ entries, selectedId, onSelect, currentRawText, isViewingHistory }: HistoryListProps) {
+  const hasCurrentRecording = !!currentRawText
+  if (entries.length === 0 && !hasCurrentRecording) return null
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Aktuelle Aufnahme */}
+      {hasCurrentRecording && (
+        <div>
+          <p className="label-uppercase text-text-tertiary mb-2">Aktuelle Aufnahme</p>
+          <button
+            onClick={() => onSelect(null)}
+            className={`
+              w-full text-left p-3 rounded-[12px] border transition-all duration-150
+              ${!isViewingHistory
+                ? 'border-matcha-400 bg-matcha-300/10 shadow-clay'
+                : 'border-border-oat bg-bg-card shadow-clay hover:bg-border-oat-light/40'
+              }
+            `}
+          >
+            <p className="text-xs text-text-secondary leading-relaxed line-clamp-2">
+              {truncate(currentRawText, 80)}
+            </p>
+          </button>
+        </div>
+      )}
+
+      {/* Letzte Aufnahmen */}
+      {entries.length > 0 && (
+        <div>
+          <p className="label-uppercase text-text-tertiary mb-2">Letzte Aufnahmen</p>
+          <div className="flex flex-col gap-2">
+            {entries.map(entry => {
+              const isSelected = entry.id === selectedId
+              return (
+                <button
+                  key={entry.id}
+                  onClick={() => onSelect(isSelected ? null : entry.id)}
+                  className={`
+                    w-full text-left p-3 rounded-[12px] border transition-all duration-150
+                    ${isSelected
+                      ? 'border-slushie-500 bg-slushie-500/5 shadow-clay'
+                      : 'border-border-oat bg-bg-card shadow-clay hover:bg-border-oat-light/40'
+                    }
+                  `}
+                >
+                  <p className="text-xs text-text-secondary leading-relaxed line-clamp-1">
+                    {truncate(entry.rawText, 60)}
+                  </p>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <span className="text-[10px] text-text-tertiary font-clay-ui">
+                      {formatRelativeTime(entry.timestamp)}
+                    </span>
+                    <span className="text-[10px] text-text-tertiary font-clay-ui opacity-50">
+                      {formatDuration(entry.duration)}
+                    </span>
+                    {entry.cleanedText && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-ube-300/15 text-ube-600 font-clay-ui">
+                        bereinigt
+                      </span>
+                    )}
+                    {entry.promptText && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-slushie-500/15 text-slushie-600 font-clay-ui">
+                        prompt
+                      </span>
+                    )}
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
