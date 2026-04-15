@@ -170,28 +170,38 @@ export default function App() {
       <div aria-hidden className="pointer-events-none fixed top-[40%] -right-40 w-[420px] h-[420px] rounded-full bg-ube-300/25 dark:bg-ube-800/15 blur-3xl z-0" />
 
       {/* Header */}
-      <header className="relative z-10 sticky top-0 backdrop-blur-md bg-bg-page/75 border-b border-border-oat">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex justify-between items-center">
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={() => navigate('landing')}
-              aria-label="Zur Startseite"
-              title="Zur Startseite"
-              className="group relative w-9 h-9 rounded-[10px] bg-matcha-300/40 hover:bg-matcha-300/60 flex items-center justify-center transition-all duration-200 hover:-rotate-6 hover:-translate-y-0.5 hover:shadow-[-4px_4px_0_0_#000] dark:hover:shadow-[-4px_4px_0_0_var(--color-matcha-600)]"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-matcha-800 dark:text-matcha-300">
+      <header className="relative z-10 sticky top-0 backdrop-blur-md bg-bg-page/70 border-b border-border-oat">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-10 h-16 flex justify-between items-center">
+          <button
+            onClick={() => navigate('landing')}
+            aria-label="Zur Startseite"
+            className="flex items-center gap-2.5 group"
+          >
+            <span className="relative w-8 h-8 rounded-[10px] bg-matcha-300/40 group-hover:bg-matcha-300/60 flex items-center justify-center transition-all duration-200 group-hover:-rotate-6 group-hover:-translate-y-0.5 group-hover:shadow-[-4px_4px_0_0_#000] dark:group-hover:shadow-[-4px_4px_0_0_var(--color-matcha-600)]">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-matcha-800 dark:text-matcha-300">
                 <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
                 <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
                 <line x1="12" x2="12" y1="19" y2="22" />
               </svg>
-            </button>
+            </span>
             <h1 className="font-clay-heading text-[17px] tracking-[-0.02em] text-text-primary">
               Whisper<span className="italic text-matcha-600 dark:text-matcha-300">Prompt</span>
             </h1>
-            <span className="hidden md:inline-block ml-1 px-2 py-0.5 rounded-full bg-lemon-400/60 text-[9.5px] font-mono tracking-[0.12em] uppercase text-lemon-800">
+            <span className="hidden md:inline-block ml-2 px-2 py-0.5 rounded-full bg-lemon-400/60 text-[10px] font-mono tracking-wider uppercase text-lemon-800">
               v1 · beta
             </span>
-          </div>
+          </button>
+
+          <nav className="hidden md:flex items-center gap-7 text-[14px] font-clay-ui text-text-secondary">
+            <button onClick={() => navigate('landing')} className="hover:text-text-primary transition-colors flex items-center gap-1.5">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M19 12H5" /><path d="m12 19-7-7 7-7" />
+              </svg>
+              Startseite
+            </button>
+            <a href="https://github.com/ricotwesten/whisperprompt" target="_blank" rel="noopener noreferrer" className="hover:text-text-primary transition-colors">GitHub</a>
+          </nav>
+
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setTheme(t => t === 'dark' ? 'cream' : 'dark')}
@@ -227,7 +237,7 @@ export default function App() {
       </header>
 
       {/* Main content */}
-      <main className="relative z-10 flex-1 flex flex-col md:flex-row p-6 md:p-8 gap-8 overflow-hidden max-w-6xl mx-auto w-full">
+      <main className="relative z-10 flex-1 flex flex-col md:flex-row px-6 md:px-10 py-8 md:py-10 gap-8 overflow-hidden max-w-[1280px] mx-auto w-full">
         {/* Left: Recorder + Aktuelle Aufnahme + History */}
         <div className={`flex flex-col gap-6 transition-all duration-300 ${hasResult ? 'md:w-[380px] md:flex-shrink-0' : 'md:flex-1'} order-2 md:order-1`}>
           <section className="bg-bg-card/80 backdrop-blur-sm border border-border-oat rounded-[24px] shadow-clay p-5">
@@ -324,6 +334,37 @@ export default function App() {
           />
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="relative z-10 px-4 md:px-6 pt-4 pb-6 mt-auto">
+        <div className="max-w-[1280px] mx-auto bg-ube-900 text-white rounded-[28px] px-6 md:px-10 py-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-[10px] bg-white/15 flex items-center justify-center">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-matcha-300">
+                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                  <line x1="12" x2="12" y1="19" y2="22" />
+                </svg>
+              </div>
+              <span className="font-clay-heading tracking-[-0.02em] text-[16px]">WhisperPrompt</span>
+              <span className="ml-2 text-[12px] font-mono uppercase tracking-[0.1em] text-white/60">Client-only · BYOK · MIT</span>
+            </div>
+
+            <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] text-white/85 font-clay-ui">
+              <button onClick={() => navigate('landing')} className="hover:text-white transition-colors">Startseite</button>
+              <a href="https://github.com/ricotwesten/whisperprompt" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
+              <a href="https://github.com/ricotwesten/whisperprompt/tree/main/docs" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Docs</a>
+              <a href="https://github.com/ricotwesten/whisperprompt/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Lizenz</a>
+            </nav>
+          </div>
+
+          <div className="mt-6 pt-5 border-t border-white/15 flex flex-col md:flex-row items-start md:items-center justify-between gap-2 text-[11px] font-mono uppercase tracking-[0.1em] text-white/55">
+            <span>© {new Date().getFullYear()} · WhisperPrompt</span>
+            <span>Made with cream, matcha &amp; ube.</span>
+          </div>
+        </div>
+      </footer>
 
       <SettingsPanel
         isOpen={settingsOpen}
