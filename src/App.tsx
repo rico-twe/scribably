@@ -12,11 +12,16 @@ import { TranscriptionResult } from './components/TranscriptionResult'
 import { ExportBar } from './components/ExportBar'
 import { HistoryList } from './components/HistoryList'
 import { SettingsPanel } from './components/SettingsPanel'
-import { navigate } from './hooks/useHashRoute'
+import { Layout } from './components/layout/Layout'
 
 type PipelineState = 'idle' | 'recording' | 'transcribing' | 'processing' | 'done' | 'error'
 
-export default function App() {
+interface AppProps {
+  theme: 'cream' | 'dark'
+  onThemeToggle: () => void
+}
+
+export default function App({ theme, onThemeToggle }: AppProps) {
   const { config, updateConfig } = useConfig()
   const { state: recState, duration, audioBlob, error: recError, startRecording, stopRecording } = useAudioRecorder()
   const { state: txState, result: txResult, error: txError, transcribe } = useTranscription()
@@ -25,15 +30,6 @@ export default function App() {
   const lastSavedTxRef = useRef<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [showLatex, setShowLatex] = useState(false)
-  const [theme, setTheme] = useState<'cream' | 'dark'>(() => {
-    try { return localStorage.getItem('wp-theme') === 'dark' ? 'dark' : 'cream' }
-    catch { return 'cream' }
-  })
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark')
-    try { localStorage.setItem('wp-theme', theme) } catch { /* noop */ }
-  }, [theme])
 
   const processingEnabled = config.enableCleaning || config.enablePrompt
 
@@ -153,91 +149,28 @@ export default function App() {
   const latexText = useMemo(() => exportText ? markdownToLatex(exportText) : null, [exportText])
   const hasResult = !!(displayRawText)
 
+  const settingsButton = (
+    <button
+      onClick={() => setSettingsOpen(true)}
+      className="flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-clay-ui text-text-primary bg-bg-card border border-border-oat shadow-clay transition-all duration-200 hover:-rotate-6 hover:-translate-y-0.5 hover:shadow-[-4px_4px_0_0_#000]"
+    >
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="opacity-70" aria-hidden>
+        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+      Einstellungen
+    </button>
+  )
+
   return (
-    <div className="min-h-screen flex flex-col bg-bg-page relative overflow-x-hidden">
-      {/* Paper grain overlay */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 z-0 opacity-[0.03] mix-blend-multiply dark:mix-blend-screen dark:opacity-[0.04]"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
-        }}
-      />
-
-      {/* Decorative atmosphere blobs */}
-      <div aria-hidden className="pointer-events-none fixed -top-40 -left-40 w-[420px] h-[420px] rounded-full bg-matcha-300/20 dark:bg-matcha-600/10 blur-3xl z-0" />
-      <div aria-hidden className="pointer-events-none fixed top-[40%] -right-40 w-[420px] h-[420px] rounded-full bg-ube-300/25 dark:bg-ube-800/15 blur-3xl z-0" />
-
-      {/* Header */}
-      <header className="relative z-10 sticky top-0 backdrop-blur-md bg-bg-page/70 border-b border-border-oat">
-        <div className="max-w-[1280px] mx-auto px-6 md:px-10 h-16 flex justify-between items-center">
-          <button
-            onClick={() => navigate('landing')}
-            aria-label="Zur Startseite"
-            className="flex items-center gap-2.5 group"
-          >
-            <span className="relative w-8 h-8 rounded-[10px] bg-matcha-300/40 group-hover:bg-matcha-300/60 flex items-center justify-center transition-all duration-200 group-hover:-rotate-6 group-hover:-translate-y-0.5 group-hover:shadow-[-4px_4px_0_0_#000] dark:group-hover:shadow-[-4px_4px_0_0_var(--color-matcha-600)]">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-matcha-800 dark:text-matcha-300">
-                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                <line x1="12" x2="12" y1="19" y2="22" />
-              </svg>
-            </span>
-            <h1 className="font-clay-heading text-[17px] tracking-[-0.02em] text-text-primary">
-              Whisper<span className="italic text-matcha-600 dark:text-matcha-300">Prompt</span>
-            </h1>
-            <span className="hidden md:inline-block ml-2 px-2 py-0.5 rounded-full bg-lemon-400/60 text-[10px] font-mono tracking-wider uppercase text-lemon-800">
-              v1 · beta
-            </span>
-          </button>
-
-          <nav className="hidden md:flex items-center gap-7 text-[14px] font-clay-ui text-text-secondary">
-            <button onClick={() => navigate('landing')} className="hover:text-text-primary transition-colors flex items-center gap-1.5">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M19 12H5" /><path d="m12 19-7-7 7-7" />
-              </svg>
-              Startseite
-            </button>
-            <a href="https://github.com/ricotwesten/whisperprompt" target="_blank" rel="noopener noreferrer" className="hover:text-text-primary transition-colors">GitHub</a>
-          </nav>
-
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => setTheme(t => t === 'dark' ? 'cream' : 'dark')}
-              aria-label={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-              className="w-9 h-9 rounded-full flex items-center justify-center text-text-secondary border border-border-oat bg-bg-card/60 hover:bg-bg-card transition-all duration-200 hover:-rotate-6 hover:-translate-y-0.5 hover:shadow-[-4px_4px_0_0_#000]"
-            >
-              {theme === 'dark' ? (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="4" />
-                  <path d="M12 2v2" /><path d="M12 20v2" />
-                  <path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" />
-                  <path d="M2 12h2" /><path d="M20 12h2" />
-                  <path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" />
-                </svg>
-              ) : (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                </svg>
-              )}
-            </button>
-            <button
-              onClick={() => setSettingsOpen(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-clay-ui text-text-primary bg-bg-card border border-border-oat shadow-clay transition-all duration-200 hover:-rotate-6 hover:-translate-y-0.5 hover:shadow-[-4px_4px_0_0_#000]"
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="opacity-70">
-                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-                <circle cx="12" cy="12" r="3" />
-              </svg>
-              Einstellungen
-            </button>
-          </div>
-        </div>
-      </header>
-
+    <Layout
+      context="app"
+      theme={theme}
+      onThemeToggle={onThemeToggle}
+      headerActions={settingsButton}
+    >
       {/* Main content */}
-      <main className="relative z-10 flex-1 flex flex-col md:flex-row px-6 md:px-10 py-8 md:py-10 gap-8 overflow-hidden max-w-[1280px] mx-auto w-full">
+      <div className="flex flex-col md:flex-row px-6 md:px-10 py-8 md:py-10 gap-8 overflow-hidden max-w-[1280px] mx-auto w-full">
         {/* Left: Recorder + Aktuelle Aufnahme + History */}
         <div className={`flex flex-col gap-6 transition-all duration-300 ${hasResult ? 'md:w-[380px] md:flex-shrink-0' : 'md:flex-1'} order-2 md:order-1`}>
           <section className="bg-bg-card/80 backdrop-blur-sm border border-border-oat rounded-[24px] shadow-clay p-5">
@@ -333,38 +266,7 @@ export default function App() {
             onClear={clearHistory}
           />
         </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="relative z-10 px-4 md:px-6 pt-4 pb-6 mt-auto">
-        <div className="max-w-[1280px] mx-auto bg-ube-900 text-white rounded-[28px] px-6 md:px-10 py-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-[10px] bg-white/15 flex items-center justify-center">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-matcha-300">
-                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                  <line x1="12" x2="12" y1="19" y2="22" />
-                </svg>
-              </div>
-              <span className="font-clay-heading tracking-[-0.02em] text-[16px]">WhisperPrompt</span>
-              <span className="ml-2 text-[12px] font-mono uppercase tracking-[0.1em] text-white/60">Client-only · BYOK · MIT</span>
-            </div>
-
-            <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] text-white/85 font-clay-ui">
-              <button onClick={() => navigate('landing')} className="hover:text-white transition-colors">Startseite</button>
-              <a href="https://github.com/ricotwesten/whisperprompt" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
-              <a href="https://github.com/ricotwesten/whisperprompt/tree/main/docs" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Docs</a>
-              <a href="https://github.com/ricotwesten/whisperprompt/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Lizenz</a>
-            </nav>
-          </div>
-
-          <div className="mt-6 pt-5 border-t border-white/15 flex flex-col md:flex-row items-start md:items-center justify-between gap-2 text-[11px] font-mono uppercase tracking-[0.1em] text-white/55">
-            <span>© {new Date().getFullYear()} · WhisperPrompt</span>
-            <span>Made with cream, matcha &amp; ube.</span>
-          </div>
-        </div>
-      </footer>
+      </div>
 
       <SettingsPanel
         isOpen={settingsOpen}
@@ -372,6 +274,6 @@ export default function App() {
         config={config}
         onConfigChange={updateConfig}
       />
-    </div>
+    </Layout>
   )
 }
