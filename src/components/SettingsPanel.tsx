@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { getSystemPrompt } from '../providers/text-processing/prompts'
 import { ProviderConfig } from './ProviderConfig'
 import { ConnectionTestButton } from './ConnectionTestButton'
@@ -46,7 +47,7 @@ export function SettingsPanel({ isOpen, onClose, config, onConfigChange }: Setti
     }
   }
 
-  return (
+  return createPortal(
     <>
       {/* Backdrop */}
       <div
@@ -211,6 +212,7 @@ export function SettingsPanel({ isOpen, onClose, config, onConfigChange }: Setti
           <div className="h-4" />
         </div>
       </div>
-    </>
+    </>,
+    document.body,
   )
 }
