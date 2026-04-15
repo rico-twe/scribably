@@ -20,7 +20,7 @@ export default function App() {
   const { state: recState, duration, audioBlob, error: recError, startRecording, stopRecording } = useAudioRecorder()
   const { state: txState, result: txResult, error: txError, transcribe } = useTranscription()
   const { state: tpState, cleanState, promptState, cleanedText, setCleanedText, promptText, error: tpError, process } = useTextProcessing()
-  const { entries: historyEntries, addEntry, updateLatest, selectedEntry, selectEntry } = useHistory()
+  const { entries: historyEntries, addEntry, updateLatest, selectedEntry, selectEntry, clearHistory } = useHistory()
   const lastSavedTxRef = useRef<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [showLatex, setShowLatex] = useState(false)
@@ -235,6 +235,7 @@ export default function App() {
               onSelect={selectEntry}
               currentRawText={txResult?.text ?? null}
               isViewingHistory={isViewingHistory}
+              onClear={clearHistory}
             />
           </div>
         </div>
@@ -273,6 +274,7 @@ export default function App() {
             onSelect={selectEntry}
             currentRawText={txResult?.text ?? null}
             isViewingHistory={isViewingHistory}
+            onClear={clearHistory}
           />
         </div>
       </main>

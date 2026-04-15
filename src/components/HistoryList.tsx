@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { HistoryEntry } from '../services/history'
 
 interface HistoryListProps {
@@ -6,6 +7,7 @@ interface HistoryListProps {
   onSelect: (id: string | null) => void
   currentRawText: string | null
   isViewingHistory: boolean
+  onClear?: () => void
 }
 
 function formatRelativeTime(timestamp: number): string {
@@ -29,9 +31,15 @@ function truncate(text: string, maxLen: number): string {
   return text.slice(0, maxLen).trimEnd() + '\u2026'
 }
 
-export function HistoryList({ entries, selectedId, onSelect, currentRawText, isViewingHistory }: HistoryListProps) {
+export function HistoryList({ entries, selectedId, onSelect, currentRawText, isViewingHistory, onClear }: HistoryListProps) {
+  const [confirming, setConfirming] = useState(false)
   const hasCurrentRecording = !!currentRawText
   if (entries.length === 0 && !hasCurrentRecording) return null
+
+  const handleConfirm = () => {
+    onClear?.()
+    setConfirming(false)
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -100,6 +108,40 @@ export function HistoryList({ entries, selectedId, onSelect, currentRawText, isV
               )
             })}
           </div>
+
+          {/* Löschen-Footer */}
+          {onClear && (
+            <div className="mt-3 pt-3 border-t border-dashed border-border-oat">
+              {!confirming ? (
+                <button
+                  onClick={() => setConfirming(true)}
+                  className="w-full label-uppercase text-text-tertiary py-2 px-3 rounded-[8px] border border-border-oat bg-transparent hover:text-pomegranate-400 hover:border-pomegranate-400/60 transition-colors duration-150"
+                >
+                  Historie löschen
+                </button>
+              ) : (
+                <div className="flex flex-col gap-2 animate-fade-in">
+                  <p className="text-[11px] text-text-tertiary text-center font-clay-ui">
+                    Alle Einträge unwiderruflich entfernen?
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setConfirming(false)}
+                      className="flex-1 label-uppercase text-text-secondary py-2 px-3 rounded-[8px] border border-border-oat bg-bg-card hover:bg-border-oat-light/50 transition-colors duration-150"
+                    >
+                      Abbrechen
+                    </button>
+                    <button
+                      onClick={handleConfirm}
+                      className="flex-1 label-uppercase text-white py-2 px-3 rounded-[8px] border border-pomegranate-400 bg-pomegranate-400 hover:-rotate-2 hover:shadow-[-4px_4px_0_0_#000] transition-all duration-200"
+                    >
+                      Wirklich löschen
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

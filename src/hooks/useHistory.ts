@@ -29,10 +29,16 @@ export function useHistory() {
     setSelectedId(id)
   }, [])
 
+  const clearHistory = useCallback(() => {
+    setEntries([])
+    setSelectedId(null)
+    saveHistory([])
+  }, [])
+
   const selectedEntry = useMemo(
     () => entries.find(e => e.id === selectedId) ?? null,
     [entries, selectedId]
   )
 
-  return { entries, addEntry, updateLatest, selectedEntry, selectEntry }
+  return { entries, addEntry, updateLatest, selectedEntry, selectEntry, clearHistory }
 }
