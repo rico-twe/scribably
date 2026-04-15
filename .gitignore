@@ -30,7 +30,9 @@ npm-debug.log*
 Thumbs.db
 
 .claude/*
-docs/superpowers/*
+docs/*
 DESIGN.md
 DESIGN-personalized.md
 CLAUDE.md
+
+.vite/*
