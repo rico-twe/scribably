@@ -53,7 +53,7 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
           bullets={[
             'BYOK — keine Proxies, keine Sammelaccounts',
             'localStorage-only — nichts auf einem Backend',
-            'Open Source — jede Zeile überprüfbar auf GitHub',
+            'Open Source — Code liegt offen auf GitHub',
             'MIT-Lizenz — forken, selbst hosten, auseinandernehmen',
           ]}
           visual={
@@ -89,7 +89,7 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
           eyebrow="Provider-agnostisch"
           title={
             <>
-              Vier Wege rein. <span className="italic text-ube-300">Unendlich</span> viele Wege raus.
+              Vier Provider, <span className="italic text-ube-300">frei</span> kombinierbar.
             </>
           }
           body={
@@ -179,8 +179,8 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
           }
           body={
             <>
-              Copy-paste, Markdown-Download, LaTeX-Export, QR-Config-Transfer aufs Phone,
-              Dark Mode für nachts. Die letzten 5 Meter sind das, was zählt — und sie sind eingebaut.
+              Copy-paste, Markdown, LaTeX, QR-Transfer aufs Handy.
+              Dark Mode ist auch dabei.
             </>
           }
           bullets={[
@@ -226,7 +226,7 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
       {/* Tech stack strip */}
       <section className="px-6 md:px-10 py-20">
         <div className="max-w-[1100px] mx-auto">
-          <p className="label-uppercase text-text-tertiary text-center mb-8">Built with</p>
+          <p className="label-uppercase text-text-tertiary text-center mb-8">Gebaut mit</p>
           <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 font-clay-heading text-[22px] md:text-[28px] tracking-[-0.03em] text-text-secondary">
             <span>React</span>
             <span className="text-text-quaternary">·</span>
@@ -250,7 +250,7 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
               Jetzt <span className="italic">aufnehmen.</span>
             </h2>
             <p className="mt-6 text-[18px] md:text-[20px] text-matcha-800/80 max-w-[520px] mx-auto leading-[1.5]">
-              Kein Account. Kein Server. Einfach sprechen — und den Rest dem Browser überlassen.
+              Keinen Account anlegen, nichts installieren. Einfach lossprechen.
             </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
               <CtaButton size="lg" variant="inverse" onClick={() => navigate('app')}>

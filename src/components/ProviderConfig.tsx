@@ -58,7 +58,7 @@ export function ProviderConfig({
               onClick={() => setShowKey(!showKey)}
               className="absolute right-2 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded-[4px] text-[10px] font-clay-ui text-text-tertiary hover:text-text-secondary hover:bg-border-oat-light/50 transition-colors"
             >
-              {showKey ? 'Hide' : 'Show'}
+              {showKey ? 'Verbergen' : 'Zeigen'}
             </button>
           </div>
           {showBaseUrl && (

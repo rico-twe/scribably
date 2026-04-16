@@ -30,8 +30,8 @@ function FullFooter() {
           <Logo size="sm" showWordmark iconBgClassName="bg-white/15" />
         </div>
         <p className="text-[14px] leading-[1.6] text-white/70 max-w-[320px]">
-          Eine Open-Source-Webapp, um gesprochene Sprache in saubere Prompts zu verwandeln.
-          Client-only, BYOK, MIT.
+          Open-Source-Webapp, die gesprochene Sprache in brauchbare Prompts verwandelt.
+          Läuft im Browser, BYOK, MIT-Lizenz.
         </p>
       </div>
 

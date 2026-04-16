@@ -26,9 +26,9 @@ export function Hero() {
           </h1>
 
           <p className="mt-8 text-[19px] md:text-[21px] leading-[1.5] text-text-secondary max-w-[540px] tracking-[-0.01em]">
-            WhisperPrompt verwandelt gesprochene Sprache in saubere, verwendbare Prompts —
-            direkt im Browser. Kein Server. Kein Account. Nur deine Keys, deine Daten,
-            deine Stimme.
+            WhisperPrompt macht aus gesprochener Sprache brauchbare Prompts.
+            Läuft komplett im Browser, kein Server, kein Account.
+            Nur deine Keys und dein Mikrofon.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-3">
