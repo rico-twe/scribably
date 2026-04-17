@@ -5,15 +5,15 @@ import { TranscriptionResult } from './TranscriptionResult'
 describe('TranscriptionResult', () => {
   it('renders only raw tab by default', () => {
     render(<TranscriptionResult rawText="raw" cleanedText={null} promptText={null} isProcessing={false} />)
-    expect(screen.getByText('Rohtext')).toBeInTheDocument()
-    expect(screen.queryByText('Bereinigt')).not.toBeInTheDocument()
+    expect(screen.getByText('Raw')).toBeInTheDocument()
+    expect(screen.queryByText('Cleaned')).not.toBeInTheDocument()
     expect(screen.queryByText('Prompt')).not.toBeInTheDocument()
   })
 
   it('renders all tabs when enabled', () => {
     render(<TranscriptionResult rawText="raw" cleanedText={null} promptText={null} isProcessing={false} showCleanTab showPromptTab />)
-    expect(screen.getByText('Rohtext')).toBeInTheDocument()
-    expect(screen.getByText('Bereinigt')).toBeInTheDocument()
+    expect(screen.getByText('Raw')).toBeInTheDocument()
+    expect(screen.getByText('Cleaned')).toBeInTheDocument()
     expect(screen.getByText('Prompt')).toBeInTheDocument()
   })
 
@@ -23,19 +23,19 @@ describe('TranscriptionResult', () => {
   })
 
   it('switches to cleaned text tab', async () => {
-    render(<TranscriptionResult rawText="raw" cleanedText="Bereinigter Text" promptText={null} isProcessing={false} showCleanTab />)
-    await userEvent.click(screen.getByText('Bereinigt'))
-    expect(screen.getByText('Bereinigter Text')).toBeInTheDocument()
+    render(<TranscriptionResult rawText="raw" cleanedText="Cleaned text" promptText={null} isProcessing={false} showCleanTab />)
+    await userEvent.click(screen.getByText('Cleaned'))
+    expect(screen.getByText('Cleaned text')).toBeInTheDocument()
   })
 
   it('shows loading state when processing', async () => {
     render(<TranscriptionResult rawText="raw" cleanedText={null} promptText={null} isProcessing={true} showCleanTab />)
-    await userEvent.click(screen.getByText('Bereinigt'))
-    expect(screen.getByText(/wird verarbeitet/i)).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Cleaned'))
+    expect(screen.getByText(/processing/i)).toBeInTheDocument()
   })
 
   it('shows placeholder when no text', () => {
     render(<TranscriptionResult rawText={null} cleanedText={null} promptText={null} isProcessing={false} />)
-    expect(screen.getByText(/aufnahme starten/i)).toBeInTheDocument()
+    expect(screen.getByText(/start recording/i)).toBeInTheDocument()
   })
 })

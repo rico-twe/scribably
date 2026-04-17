@@ -44,7 +44,7 @@ export function ExportBar({ text, latexText, disabled, showLatex, onToggleLatex 
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-matcha-600">
               <polyline points="20 6 9 17 4 12" />
             </svg>
-            <span className="text-matcha-600">Kopiert</span>
+            <span className="text-matcha-600">Copied</span>
           </>
         ) : (
           <>
@@ -52,7 +52,7 @@ export function ExportBar({ text, latexText, disabled, showLatex, onToggleLatex 
               <rect width="14" height="14" x="8" y="8" rx="2" />
               <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
             </svg>
-            Kopieren
+            Copy
           </>
         )}
       </button>

@@ -45,7 +45,7 @@ export function AudioRecorder({
             <line x1="12" x2="12" y1="3" y2="15" />
           </svg>
           <span className="text-[11px] text-text-tertiary group-hover:text-text-secondary transition-colors font-clay-ui">
-            Audio-Datei hochladen
+            Upload audio file
           </span>
           <input
             type="file"

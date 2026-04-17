@@ -16,7 +16,7 @@ interface LandingPageProps {
 export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
   const ctaButton = (
     <CtaButton size="md" onClick={() => navigate('app')}>
-      App öffnen
+      Open app
     </CtaButton>
   )
 
@@ -39,22 +39,22 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
           eyebrow="Privacy by Design"
           title={
             <>
-              Deine Stimme verlässt <span className="italic text-matcha-300">deinen Browser</span> nur dorthin, wo du sie hinschickst.
+              Your voice leaves <span className="italic text-matcha-300">your browser</span> only where you send it.
             </>
           }
           body={
             <>
-              WhisperPrompt ist eine reine Client-App. Es gibt keinen WhisperPrompt-Server —
-              nichts speichert, loggt oder leitet weiter. API-Keys bleiben in deinem{' '}
+              WhisperPrompt is a pure client app. There is no WhisperPrompt server —
+              nothing stores, logs, or forwards anything. API keys stay in your{' '}
               <code className="font-mono text-[14px] bg-white/10 px-1.5 py-0.5 rounded">localStorage</code>,
-              Audio wandert direkt von <em>dir</em> zu <em>deinem</em> Provider.
+              audio goes directly from <em>you</em> to <em>your</em> provider.
             </>
           }
           bullets={[
-            'BYOK — keine Proxies, keine Sammelaccounts',
-            'localStorage-only — nichts auf einem Backend',
-            'Open Source — Code liegt offen auf GitHub',
-            'MIT-Lizenz — forken, selbst hosten, auseinandernehmen',
+            'BYOK — no proxies, no shared accounts',
+            'localStorage only — nothing on a backend',
+            'Open source — code is on GitHub',
+            'MIT license — fork it, self-host it, take it apart',
           ]}
           visual={
             <div className="relative">
@@ -69,7 +69,7 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
                   <div className="pl-5"><span className="text-slushie-500">llm</span>: <span className="text-white">'sk-ant-...'</span>,</div>
                   <div><span className="text-lemon-400">{'}'}</span></div>
                   <div className="h-2" />
-                  <div className="text-white/60">// bleibt hier. punkt.</div>
+                  <div className="text-white/60">// stays here. period.</div>
                   <div><span className="text-matcha-300">localStorage</span>.setItem(<span className="text-white">'wp-config'</span>, …)</div>
                 </div>
               </div>
@@ -86,23 +86,23 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
         <FeatureSection
           tone="ube"
           reverse
-          eyebrow="Provider-agnostisch"
+          eyebrow="Provider-agnostic"
           title={
             <>
-              Vier Provider, <span className="italic text-ube-300">frei</span> kombinierbar.
+              Four providers, <span className="italic text-ube-300">mix</span> and match.
             </>
           }
           body={
             <>
-              Zwei unabhängige Provider-Registries — eine für Speech-to-Text, eine für Text-Processing.
-              Mix and match, wie es dir passt. Neuer Provider? Eine Factory-Funktion, fertig.
+              Two independent provider registries — one for Speech-to-Text, one for Text Processing.
+              Mix and match however you like. New provider? One factory function, done.
             </>
           }
           bullets={[
             'STT: Groq Whisper, OpenAI Whisper',
-            'LLM: OpenAI-kompatibel, Anthropic',
-            'Zwei-Stufen-Pipeline: Clean → Prompt',
-            'Connection-Test für jeden Key vor dem Absenden',
+            'LLM: OpenAI-compatible, Anthropic',
+            'Two-step pipeline: Clean → Prompt',
+            'Connection test for every key before sending',
           ]}
           visual={<ProviderGrid />}
         />
@@ -111,35 +111,35 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
       <div className="py-6">
         <FeatureSection
           tone="lemon"
-          eyebrow="Zwei-Stufen-Pipeline"
+          eyebrow="Two-step pipeline"
           title={
             <>
-              Vom <span className="italic">„äh also, ja"</span> zum strukturierten Prompt.
+              From <span className="italic">"um, well, yeah"</span> to a structured prompt.
             </>
           }
           body={
             <>
-              Rohtext ist selten das, was du schicken willst. WhisperPrompt trennt
-              Bereinigung und Prompt-Konstruktion in zwei unabhängige, abschaltbare Schritte —
-              und lässt dich überall dazwischen abgreifen.
+              Raw text is rarely what you want to send. WhisperPrompt separates
+              cleanup and prompt construction into two independent, toggleable steps —
+              and lets you grab the output at any point.
             </>
           }
           bullets={[
-            'Stufe 1: Cleanup — Füllwörter, Satzbau, Tippfehler',
-            'Stufe 2: Prompt — strukturiert, rollenbasiert, instruktiv',
-            'Beide Stufen manuell triggerbar, nichts automatisch',
-            'Custom System-Prompts pro Stufe — deine Rezepte',
+            'Step 1: Cleanup — filler words, sentence structure, typos',
+            'Step 2: Prompt — structured, role-based, instructive',
+            'Both steps triggered manually, nothing automatic',
+            'Custom system prompts per step — your recipes',
           ]}
           visual={
             <div className="grid gap-4">
               <div className="bg-white border border-black/15 rounded-[20px] p-5 shadow-[-4px_4px_0_0_rgba(0,0,0,0.15)]">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="label-uppercase text-lemon-800">Roh</span>
+                  <span className="label-uppercase text-lemon-800">Raw</span>
                   <span className="font-mono text-[10px] text-black/50">00:12</span>
                 </div>
                 <p className="text-[13.5px] leading-[1.6] text-black/80 font-mono">
-                  also, ähm, schreib mir bitte irgendwie eine email an das team wo drinsteht
-                  dass wir montag loslegen und so, halt nicht zu förmlich aber auch nicht zu locker ne
+                  um, uh, can you write an email to the team saying we kick off monday,
+                  not too formal but not too stiff either you know
                 </p>
               </div>
 
@@ -157,9 +157,9 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
                   <span className="font-mono text-[10px] text-white/50">ready</span>
                 </div>
                 <p className="text-[13.5px] leading-[1.6] font-mono">
-                  Verfasse eine freundlich-professionelle E-Mail an das Team.
-                  Inhalt: Projektstart Montag, Ton: kollegial, nicht zu förmlich.
-                  Max. 6 Sätze.
+                  Write a warm, professional email to the team.
+                  Content: project starts Monday, tone: collegial, not too formal.
+                  Max. 6 sentences.
                 </p>
               </div>
             </div>
@@ -174,20 +174,20 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
           eyebrow="Export & Mobile"
           title={
             <>
-              Raus aus dem Browser. <span className="italic">In jede Ecke.</span>
+              Out of the browser. <span className="italic">Into every corner.</span>
             </>
           }
           body={
             <>
-              Copy-paste, Markdown, LaTeX, QR-Transfer aufs Handy.
-              Dark Mode ist auch dabei.
+              Copy-paste, Markdown, LaTeX, QR transfer to your phone.
+              Dark mode too.
             </>
           }
           bullets={[
             'Export: Clipboard · .txt · .md · LaTeX',
-            'QR-Transfer: Config als Base64-QR aufs Handy',
+            'QR transfer: config as Base64 QR to your phone',
             'Mobile-first responsive UI',
-            'Dark Mode für Spätschichten',
+            'Dark mode for late nights',
           ]}
           visual={
             <div className="relative">
@@ -226,7 +226,7 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
       {/* Tech stack strip */}
       <section className="px-6 md:px-10 py-20">
         <div className="max-w-[1100px] mx-auto">
-          <p className="label-uppercase text-text-tertiary text-center mb-8">Gebaut mit</p>
+          <p className="label-uppercase text-text-tertiary text-center mb-8">Built with</p>
           <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 font-clay-heading text-[22px] md:text-[28px] tracking-[-0.03em] text-text-secondary">
             <span>React</span>
             <span className="text-text-quaternary">·</span>
@@ -245,19 +245,19 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
       <section className="px-4 md:px-6 pb-10">
         <div className="relative max-w-[1280px] mx-auto bg-matcha-300 rounded-[40px] overflow-hidden">
           <div className="relative px-8 md:px-16 py-24 md:py-32 text-center">
-            <p className="label-uppercase text-matcha-800 mb-6">Bereit?</p>
+            <p className="label-uppercase text-matcha-800 mb-6">Ready?</p>
             <h2 className="font-clay-heading text-[56px] md:text-[96px] leading-[0.95] tracking-[-0.045em] text-matcha-800">
-              Jetzt <span className="italic">aufnehmen.</span>
+              Record <span className="italic">now.</span>
             </h2>
             <p className="mt-6 text-[18px] md:text-[20px] text-matcha-800/80 max-w-[520px] mx-auto leading-[1.5]">
-              Keinen Account anlegen, nichts installieren. Einfach lossprechen.
+              No account needed, nothing to install. Just start talking.
             </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
               <CtaButton size="lg" variant="inverse" onClick={() => navigate('app')}>
-                Zur App
+                Open app
               </CtaButton>
               <CtaButton size="lg" variant="ghost" href={GITHUB_URL}>
-                Source lesen
+                Read source
               </CtaButton>
             </div>
 

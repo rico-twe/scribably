@@ -19,7 +19,7 @@ export function ConnectionTestButton({ onTest }: ConnectionTestButtonProps) {
       setState('success')
     } else {
       setState('error')
-      setError(result.error ?? 'Unbekannter Fehler')
+      setError(result.error ?? 'Unknown error')
     }
   }
 
@@ -52,10 +52,10 @@ export function ConnectionTestButton({ onTest }: ConnectionTestButtonProps) {
             <line x1="18" x2="6" y1="6" y2="18" /><line x1="6" x2="18" y1="6" y2="18" />
           </svg>
         )}
-        {state === 'testing' && 'Teste...'}
-        {state === 'success' && 'Verbunden'}
-        {state === 'error' && 'Fehlgeschlagen'}
-        {state === 'idle' && 'Verbindung testen'}
+        {state === 'testing' && 'Testing...'}
+        {state === 'success' && 'Connected'}
+        {state === 'error' && 'Failed'}
+        {state === 'idle' && 'Test connection'}
       </button>
       {state === 'error' && error && (
         <span className="text-[11px] text-pomegranate-400/70 truncate max-w-[200px]" title={error}>{error}</span>

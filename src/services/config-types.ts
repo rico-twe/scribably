@@ -17,5 +17,5 @@ export interface AppConfig {
 export const DEFAULT_CONFIG: AppConfig = {
   sttProvider: null,
   llmProvider: null,
-  language: 'de',
+  language: 'en',
 }

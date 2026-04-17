@@ -8,21 +8,21 @@ describe('LandingPage', () => {
 
   it('renders the hero headline and primary CTA', () => {
     render(<LandingPage theme="cream" onThemeToggle={() => {}} />)
-    expect(screen.getByText('Sprache.')).toBeInTheDocument()
+    expect(screen.getByText('Speech.')).toBeInTheDocument()
     expect(screen.getByText('Prompt.')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /jetzt aufnehmen/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /record now/i })).toBeInTheDocument()
   })
 
   it('navigates to #/app when the primary CTA is clicked', () => {
     render(<LandingPage theme="cream" onThemeToggle={() => {}} />)
-    fireEvent.click(screen.getByRole('button', { name: /jetzt aufnehmen/i }))
+    fireEvent.click(screen.getByRole('button', { name: /record now/i }))
     expect(window.location.hash).toBe('#/app')
   })
 
   it('renders pipeline, providers and privacy sections', () => {
     render(<LandingPage theme="cream" onThemeToggle={() => {}} />)
-    expect(screen.getByText(/so funktioniert/i)).toBeInTheDocument()
-    expect(screen.getByText(/provider-agnostisch/i)).toBeInTheDocument()
+    expect(screen.getByText(/how it works/i)).toBeInTheDocument()
+    expect(screen.getByText(/provider-agnostic/i)).toBeInTheDocument()
     expect(screen.getByText(/privacy by design/i)).toBeInTheDocument()
   })
 })

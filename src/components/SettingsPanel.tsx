@@ -18,7 +18,7 @@ const LLM_PROVIDERS = [
 ]
 
 const LANGUAGES = [
-  { code: 'de', name: 'Deutsch' },
+  { code: 'de', name: 'German' },
   { code: 'en', name: 'English' },
   { code: 'fr', name: 'Français' },
   { code: 'es', name: 'Español' },
@@ -66,10 +66,10 @@ export function SettingsPanel({ isOpen, onClose, config, onConfigChange }: Setti
         <div className="p-6 space-y-8">
           {/* Header */}
           <div className="flex justify-between items-center">
-            <h2 className="text-sm font-clay-heading text-text-primary tracking-[-0.2px]">Einstellungen</h2>
+            <h2 className="text-sm font-clay-heading text-text-primary tracking-[-0.2px]">Settings</h2>
             <button
               onClick={onClose}
-              aria-label="Schliessen"
+              aria-label="Close"
               className="w-7 h-7 rounded-[8px] flex items-center justify-center text-text-tertiary hover:text-text-secondary hover:bg-border-oat-light/50 transition-colors"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -102,14 +102,14 @@ export function SettingsPanel({ isOpen, onClose, config, onConfigChange }: Setti
 
           {/* Post-processing */}
           <section className="space-y-3">
-            <SectionLabel>Nachbearbeitung</SectionLabel>
+            <SectionLabel>Post-processing</SectionLabel>
             <label className="flex items-center gap-2.5 cursor-pointer group">
               <input
                 type="checkbox"
                 checked={!!config.enableCleaning}
                 onChange={e => onConfigChange({ enableCleaning: e.target.checked })}
               />
-              <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors">Text bereinigen</span>
+              <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors">Clean text</span>
             </label>
             <label className="flex items-center gap-2.5 cursor-pointer group">
               <input
@@ -117,7 +117,7 @@ export function SettingsPanel({ isOpen, onClose, config, onConfigChange }: Setti
                 checked={!!config.enablePrompt}
                 onChange={e => onConfigChange({ enablePrompt: e.target.checked })}
               />
-              <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors">Prompt generieren</span>
+              <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors">Generate prompt</span>
             </label>
           </section>
 
@@ -127,7 +127,7 @@ export function SettingsPanel({ isOpen, onClose, config, onConfigChange }: Setti
           {/* LLM Provider */}
           <section className="space-y-3">
             <ProviderConfig
-              label="Text-Aufbereitung (LLM)"
+              label="Text Processing (LLM)"
               providers={LLM_PROVIDERS}
               selectedId={config.llmProvider?.providerId ?? null}
               apiKey={config.llmProvider?.apiKey ?? ''}
@@ -158,7 +158,7 @@ export function SettingsPanel({ isOpen, onClose, config, onConfigChange }: Setti
 
           {/* Language */}
           <section>
-            <SectionLabel>Sprache</SectionLabel>
+            <SectionLabel>Language</SectionLabel>
             <select
               value={config.language}
               onChange={e => onConfigChange({ language: e.target.value })}
@@ -172,11 +172,11 @@ export function SettingsPanel({ isOpen, onClose, config, onConfigChange }: Setti
 
           {/* Custom prompt */}
           <section>
-            <SectionLabel>Benutzerdefinierter Prompt (Bereinigung)</SectionLabel>
+            <SectionLabel>Custom prompt (cleanup)</SectionLabel>
             <textarea
               value={config.customPrompt ?? ''}
               onChange={e => onConfigChange({ customPrompt: e.target.value || undefined })}
-              placeholder="Eigene Anweisungen. Leer = Standard-Prompt."
+              placeholder="Custom instructions. Empty = default prompt."
               rows={3}
               className="w-full bg-bg-card rounded-[4px] px-3 py-2 text-sm text-text-secondary border border-border-input focus:outline focus:outline-2 focus:outline-[rgb(20,110,245)] resize-y transition-colors placeholder:text-text-tertiary"
             />
@@ -184,16 +184,16 @@ export function SettingsPanel({ isOpen, onClose, config, onConfigChange }: Setti
 
           {/* Default prompts */}
           <section className="space-y-2">
-            <SectionLabel>Standard-Prompts</SectionLabel>
+            <SectionLabel>Default prompts</SectionLabel>
             <details>
               <summary className="text-xs text-text-secondary cursor-pointer hover:text-text-primary transition-colors font-clay-ui py-1">
-                Bereinigung
+                Cleanup
               </summary>
               <pre className="mt-1.5 p-3 bg-bg-page border border-border-oat-light rounded-[8px] text-[11px] text-text-tertiary font-mono whitespace-pre-wrap leading-relaxed">{getSystemPrompt('clean', config.language)}</pre>
             </details>
             <details>
               <summary className="text-xs text-text-secondary cursor-pointer hover:text-text-primary transition-colors font-clay-ui py-1">
-                Prompt-Erstellung
+                Prompt generation
               </summary>
               <pre className="mt-1.5 p-3 bg-bg-page border border-border-oat-light rounded-[8px] text-[11px] text-text-tertiary font-mono whitespace-pre-wrap leading-relaxed">{getSystemPrompt('prompt', config.language)}</pre>
             </details>

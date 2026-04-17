@@ -30,16 +30,16 @@ function FullFooter() {
           <Logo size="sm" showWordmark iconBgClassName="bg-white/15" />
         </div>
         <p className="text-[14px] leading-[1.6] text-white/70 max-w-[320px]">
-          Open-Source-Webapp, die gesprochene Sprache in brauchbare Prompts verwandelt.
-          Läuft im Browser, BYOK, MIT-Lizenz.
+          Open-source web app that turns spoken language into usable prompts.
+          Runs in your browser, BYOK, MIT license.
         </p>
       </div>
 
       <div>
-        <p className="label-uppercase text-ube-300 mb-3">Projekt</p>
+        <p className="label-uppercase text-ube-300 mb-3">Project</p>
         <ul className="space-y-2 text-[14px] text-white/85">
           <li><a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a></li>
-          <li><a href={`${GITHUB_URL}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Lizenz · MIT</a></li>
+          <li><a href={`${GITHUB_URL}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">License · MIT</a></li>
           <li><a href={`${GITHUB_URL}/issues`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Issues</a></li>
         </ul>
       </div>
@@ -47,7 +47,7 @@ function FullFooter() {
       <div>
         <p className="label-uppercase text-ube-300 mb-3">Docs</p>
         <ul className="space-y-2 text-[14px] text-white/85">
-          <li><a href={`${GITHUB_URL}/tree/main/docs`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Architektur</a></li>
+          <li><a href={`${GITHUB_URL}/tree/main/docs`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Architecture</a></li>
           <li><a href={`${GITHUB_URL}/blob/main/docs/providers.md`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Provider</a></li>
           <li><a href={`${GITHUB_URL}/blob/main/docs/config.md`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Config</a></li>
         </ul>
@@ -56,7 +56,7 @@ function FullFooter() {
       <div>
         <p className="label-uppercase text-ube-300 mb-3">App</p>
         <ul className="space-y-2 text-[14px] text-white/85">
-          <li><button onClick={() => navigate('app')} className="hover:text-white transition-colors">App öffnen</button></li>
+          <li><button onClick={() => navigate('app')} className="hover:text-white transition-colors">Open app</button></li>
         </ul>
       </div>
     </div>
@@ -72,10 +72,10 @@ function CompactFooter() {
       </div>
 
       <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[14px] text-white/85 font-clay-ui">
-        <button onClick={() => navigate('landing')} className="hover:text-white transition-colors">Startseite</button>
+        <button onClick={() => navigate('landing')} className="hover:text-white transition-colors">Home</button>
         <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
         <a href={`${GITHUB_URL}/tree/main/docs`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Docs</a>
-        <a href={`${GITHUB_URL}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Lizenz</a>
+        <a href={`${GITHUB_URL}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">License</a>
       </nav>
     </div>
   )

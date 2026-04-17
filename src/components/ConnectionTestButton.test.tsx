@@ -5,24 +5,24 @@ import { ConnectionTestButton } from './ConnectionTestButton'
 describe('ConnectionTestButton', () => {
   it('renders test button', () => {
     render(<ConnectionTestButton onTest={vi.fn().mockResolvedValue({ success: true })} />)
-    expect(screen.getByText(/testen/i)).toBeInTheDocument()
+    expect(screen.getByText(/test connection/i)).toBeInTheDocument()
   })
 
   it('shows success state after successful test', async () => {
     const onTest = vi.fn().mockResolvedValue({ success: true })
     render(<ConnectionTestButton onTest={onTest} />)
-    await userEvent.click(screen.getByText(/testen/i))
+    await userEvent.click(screen.getByText(/test connection/i))
     await waitFor(() => {
-      expect(screen.getByText(/verbunden/i)).toBeInTheDocument()
+      expect(screen.getByText(/connected/i)).toBeInTheDocument()
     })
   })
 
   it('shows error state after failed test', async () => {
     const onTest = vi.fn().mockResolvedValue({ success: false, error: 'Unauthorized' })
     render(<ConnectionTestButton onTest={onTest} />)
-    await userEvent.click(screen.getByText(/testen/i))
+    await userEvent.click(screen.getByText(/test connection/i))
     await waitFor(() => {
-      expect(screen.getByText(/fehlgeschlagen/i)).toBeInTheDocument()
+      expect(screen.getByText(/failed/i)).toBeInTheDocument()
     })
   })
 
@@ -30,8 +30,8 @@ describe('ConnectionTestButton', () => {
     let resolveTest!: (v: any) => void
     const onTest = vi.fn().mockReturnValue(new Promise(r => { resolveTest = r }))
     render(<ConnectionTestButton onTest={onTest} />)
-    await userEvent.click(screen.getByText(/testen/i))
-    expect(screen.getByText(/teste/i)).toBeInTheDocument()
+    await userEvent.click(screen.getByText(/test connection/i))
+    expect(screen.getByText(/testing/i)).toBeInTheDocument()
     resolveTest({ success: true })
   })
 
@@ -39,7 +39,7 @@ describe('ConnectionTestButton', () => {
     let resolveTest!: (v: any) => void
     const onTest = vi.fn().mockReturnValue(new Promise(r => { resolveTest = r }))
     render(<ConnectionTestButton onTest={onTest} />)
-    await userEvent.click(screen.getByText(/testen/i))
+    await userEvent.click(screen.getByText(/test connection/i))
     expect(screen.getByRole('button')).toBeDisabled()
     resolveTest({ success: true })
   })

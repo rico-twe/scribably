@@ -1,23 +1,23 @@
 # WhisperPrompt
 
-Sprache zu Prompt — schnell, einfach, lokal.
+Speech to prompt — fast, simple, local.
 
-WhisperPrompt ist eine Web-App, die gesprochene Sprache in saubere, verwendbare Prompts umwandelt. Rein client-seitig — keine Daten werden auf einem Server gespeichert.
+WhisperPrompt is a web app that turns spoken language into clean, usable prompts. Purely client-side — no data is stored on a server.
 
 ## Features
 
-- Mikrofon-Aufnahme oder Audio-Datei-Upload
-- Speech-to-Text via Groq, OpenAI oder andere Provider
-- Automatische Text-Aufbereitung: Rohtext → Bereinigt → Prompt
+- Microphone recording or audio file upload
+- Speech-to-Text via Groq, OpenAI, or other providers
+- Automatic text processing: Raw → Cleaned → Prompt
 - Export: Clipboard, .txt, .md
-- Konfiguration via QR-Code auf andere Geräte übertragen
-- Responsive: Mobile + Desktop
-- Dark Theme
-- Open Source (MIT)
+- Transfer config to other devices via QR code
+- Responsive: mobile + desktop
+- Dark theme
+- Open source (MIT)
 
 ## Setup
 
-### Voraussetzungen
+### Requirements
 
 - Node.js 18+
 - npm
@@ -33,17 +33,17 @@ npm run dev
 
 ### API Keys
 
-WhisperPrompt speichert keine Keys auf Servern. Du brauchst:
+WhisperPrompt does not store keys on servers. You need:
 
-1. **STT-Provider** (mindestens einen):
-   - [Groq API Key](https://console.groq.com) (empfohlen — schnell + günstig)
-   - [OpenAI API Key](https://platform.openai.com)
+1. **STT provider** (at least one):
+   - [Groq API key](https://console.groq.com) (recommended — fast + cheap)
+   - [OpenAI API key](https://platform.openai.com)
 
-2. **LLM-Provider** (optional, für Text-Aufbereitung):
-   - Jeder OpenAI-kompatible Endpoint (OpenAI, Groq, OpenRouter, etc.)
-   - [Anthropic API Key](https://console.anthropic.com)
+2. **LLM provider** (optional, for text processing):
+   - Any OpenAI-compatible endpoint (OpenAI, Groq, OpenRouter, etc.)
+   - [Anthropic API key](https://console.anthropic.com)
 
-Keys werden im localStorage deines Browsers gespeichert.
+Keys are stored in your browser's localStorage.
 
 ## Tech Stack
 
@@ -52,16 +52,16 @@ Keys werden im localStorage deines Browsers gespeichert.
 - Vitest + React Testing Library
 - qrcode.react
 
-## Entwicklung
+## Development
 
 ```bash
-npm run dev      # Dev-Server starten
-npm run build    # Production Build
-npm run preview  # Build-Vorschau
-npx vitest       # Tests im Watch-Mode
-npx vitest run   # Tests einmalig
+npm run dev      # Start dev server
+npm run build    # Production build
+npm run preview  # Preview build
+npx vitest       # Tests in watch mode
+npx vitest run   # Run tests once
 ```
 
-## Lizenz
+## License
 
 MIT

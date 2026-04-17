@@ -9,8 +9,8 @@ interface Step {
 const steps: Step[] = [
   {
     num: '01',
-    title: 'Aufnehmen',
-    body: 'Mikrofon oder Datei. MediaRecorder API direkt im Browser, keine Uploads.',
+    title: 'Record',
+    body: 'Microphone or file. MediaRecorder API directly in the browser, no uploads.',
     tone: 'bg-matcha-300/40 text-matcha-800',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -22,8 +22,8 @@ const steps: Step[] = [
   },
   {
     num: '02',
-    title: 'Transkribieren',
-    body: 'STT Provider deiner Wahl — Groq Whisper, OpenAI Whisper. Sprachenerkennung inklusive.',
+    title: 'Transcribe',
+    body: 'STT provider of your choice — Groq Whisper, OpenAI Whisper. Language detection included.',
     tone: 'bg-slushie-500/30 text-slushie-800',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -33,8 +33,8 @@ const steps: Step[] = [
   },
   {
     num: '03',
-    title: 'Aufbereiten',
-    body: 'LLM bereinigt Füllwörter, Satzbau, Grammatik. Optional, abschaltbar.',
+    title: 'Clean',
+    body: 'LLM removes filler words, fixes sentence structure and grammar. Optional, toggleable.',
     tone: 'bg-lemon-400/50 text-lemon-800',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -45,8 +45,8 @@ const steps: Step[] = [
   },
   {
     num: '04',
-    title: 'Prompten',
-    body: 'Zweite Stufe: aus gereinigtem Text wird ein strukturierter Prompt. Copy, export, Markdown, LaTeX.',
+    title: 'Prompt',
+    body: 'Second step: cleaned text becomes a structured prompt. Copy, export, Markdown, LaTeX.',
     tone: 'bg-ube-300/50 text-ube-800',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -63,14 +63,14 @@ export function PipelineFlow() {
       <div className="max-w-[1200px] mx-auto">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-14">
           <div>
-            <p className="label-uppercase text-text-tertiary mb-3">So funktioniert's</p>
+            <p className="label-uppercase text-text-tertiary mb-3">How it works</p>
             <h2 className="font-clay-heading text-[40px] md:text-[56px] leading-[1.02] tracking-[-0.035em] max-w-[640px]">
-              Vier Stationen zwischen <span className="italic text-matcha-600">„Äh…"</span> und fertigem Prompt.
+              Four steps between <span className="italic text-matcha-600">"uh…"</span> and a finished prompt.
             </h2>
           </div>
           <p className="text-[17px] leading-[1.55] text-text-secondary max-w-[360px]">
-            Jede Stufe ist unabhängig konfigurierbar. Du bestimmst, wo dein Audio landet —
-            und wo es aufhört.
+            Each step is independently configurable. You decide where your audio goes —
+            and where it stops.
           </p>
         </div>
 
