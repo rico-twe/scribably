@@ -36,6 +36,6 @@ describe('TranscriptionResult', () => {
 
   it('shows placeholder when no text', () => {
     render(<TranscriptionResult rawText={null} cleanedText={null} promptText={null} isProcessing={false} />)
-    expect(screen.getByText(/start recording/i)).toBeInTheDocument()
+    expect(screen.getByText(/record something/i)).toBeInTheDocument()
   })
 })

@@ -14,7 +14,7 @@ export function QRCodeTransfer({ configBase64, onImport }: QRCodeTransferProps) 
           <QRCodeSVG value={configBase64} size={120} />
         </div>
         <p className="text-[11px] text-lemon-700 mt-2.5 font-clay-ui">
-          QR code contains API keys
+          Contains your API keys — share carefully.
         </p>
       </div>
       <div>

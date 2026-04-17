@@ -44,8 +44,8 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
           }
           body={
             <>
-              WhisperPrompt is a pure client app. There is no WhisperPrompt server —
-              nothing stores, logs, or forwards anything. API keys stay in your{' '}
+              WhisperPrompt is a pure client app. No WhisperPrompt server.
+              Nothing logs or forwards anything. API keys stay in your{' '}
               <code className="font-mono text-[14px] bg-white/10 px-1.5 py-0.5 rounded">localStorage</code>,
               audio goes directly from <em>you</em> to <em>your</em> provider.
             </>
@@ -54,7 +54,7 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
             'BYOK — no proxies, no shared accounts',
             'localStorage only — nothing on a backend',
             'Open source — code is on GitHub',
-            'MIT license — fork it, self-host it, take it apart',
+            'MIT license: fork it, self-host it, take it apart',
           ]}
           visual={
             <div className="relative">
@@ -94,8 +94,8 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
           }
           body={
             <>
-              Two independent provider registries — one for Speech-to-Text, one for Text Processing.
-              Mix and match however you like. New provider? One factory function, done.
+              Two independent provider registries: one for Speech-to-Text, one for Text Processing.
+              Mix and match. New provider? One factory function, done.
             </>
           }
           bullets={[
@@ -119,9 +119,9 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
           }
           body={
             <>
-              Raw text is rarely what you want to send. WhisperPrompt separates
-              cleanup and prompt construction into two independent, toggleable steps —
-              and lets you grab the output at any point.
+              Raw text is rarely what you want to send. WhisperPrompt splits
+              cleanup and prompt construction into two toggleable steps.
+              Grab the output at any point.
             </>
           }
           bullets={[

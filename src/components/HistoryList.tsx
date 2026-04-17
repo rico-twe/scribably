@@ -122,7 +122,7 @@ export function HistoryList({ entries, selectedId, onSelect, currentRawText, isV
               ) : (
                 <div className="flex flex-col gap-2 animate-fade-in">
                   <p className="text-[11px] text-text-tertiary text-center font-clay-ui">
-                    Remove all entries permanently?
+                    Clear all history? This can't be undone.
                   </p>
                   <div className="flex gap-2">
                     <button

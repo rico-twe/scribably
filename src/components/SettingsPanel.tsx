@@ -176,7 +176,7 @@ export function SettingsPanel({ isOpen, onClose, config, onConfigChange }: Setti
             <textarea
               value={config.customPrompt ?? ''}
               onChange={e => onConfigChange({ customPrompt: e.target.value || undefined })}
-              placeholder="Custom instructions. Empty = default prompt."
+              placeholder="Custom instructions. Leave empty for the default."
               rows={3}
               className="w-full bg-bg-card rounded-[4px] px-3 py-2 text-sm text-text-secondary border border-border-input focus:outline focus:outline-2 focus:outline-[rgb(20,110,245)] resize-y transition-colors placeholder:text-text-tertiary"
             />
