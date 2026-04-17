@@ -19,8 +19,8 @@ interface TranscriptionResultProps {
 }
 
 const ALL_TABS: { id: Tab; label: string }[] = [
-  { id: 'raw', label: 'Rohtext' },
-  { id: 'clean', label: 'Bereinigt' },
+  { id: 'raw', label: 'Raw' },
+  { id: 'clean', label: 'Cleaned' },
   { id: 'prompt', label: 'Prompt' },
 ]
 
@@ -80,7 +80,7 @@ export function TranscriptionResult({
         {showLoading ? (
           <div className="p-5 flex items-center gap-3">
             <div className="w-4 h-4 border-2 border-slushie-500/50 border-t-transparent rounded-full animate-spin-smooth" />
-            <span className="text-text-tertiary text-xs font-clay-ui">Wird verarbeitet...</span>
+            <span className="text-text-tertiary text-xs font-clay-ui">Processing...</span>
           </div>
         ) : showLatex && latexText ? (
           <pre className="p-5 whitespace-pre-wrap font-mono text-text-secondary text-[12px] leading-[1.6] overflow-auto">{latexText}</pre>
@@ -100,7 +100,7 @@ export function TranscriptionResult({
               <line x1="12" x2="12" y1="19" y2="22" />
             </svg>
             <p className="text-text-tertiary text-xs font-clay-ui">
-              {rawText ? 'Tab wechseln oder Verarbeitung starten.' : 'Aufnahme starten um Text zu generieren.'}
+              {rawText ? 'Switch tabs or start processing.' : 'Start recording to generate text.'}
             </p>
           </div>
         )}
@@ -118,7 +118,7 @@ export function TranscriptionResult({
               {isCleanProcessing && (
                 <div className="w-3 h-3 border-[1.5px] border-ube-800/50 border-t-transparent rounded-full animate-spin-smooth" />
               )}
-              {isCleanProcessing ? 'Bereinige...' : cleanedText ? 'Erneut bereinigen' : 'Bereinigen'}
+              {isCleanProcessing ? 'Cleaning...' : cleanedText ? 'Clean again' : 'Clean'}
             </button>
           )}
           {showPromptButton && (
@@ -130,7 +130,7 @@ export function TranscriptionResult({
               {isPromptProcessing && (
                 <div className="w-3 h-3 border-[1.5px] border-slushie-800/50 border-t-transparent rounded-full animate-spin-smooth" />
               )}
-              {isPromptProcessing ? 'Erstelle Prompt...' : promptText ? 'Prompt neu erstellen' : 'Prompt erstellen'}
+              {isPromptProcessing ? 'Creating prompt...' : promptText ? 'Regenerate prompt' : 'Create prompt'}
             </button>
           )}
         </div>

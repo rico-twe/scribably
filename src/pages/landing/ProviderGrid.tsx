@@ -6,10 +6,10 @@ interface Provider {
 }
 
 const providers: Provider[] = [
-  { name: 'Groq', type: 'STT + LLM', tagline: 'Whisper Large V3. Schnell, günstig, Default.', dot: 'bg-lemon-500' },
-  { name: 'OpenAI', type: 'STT + LLM', tagline: 'Whisper API · GPT-4o-compatible Endpoint.', dot: 'bg-matcha-300' },
-  { name: 'Anthropic', type: 'LLM', tagline: 'Claude Sonnet / Opus. Direkt aus dem Browser.', dot: 'bg-pomegranate-400' },
-  { name: 'OpenAI-kompatibel', type: 'LLM', tagline: 'OpenRouter, LMStudio, Ollama, dein eigener Server.', dot: 'bg-slushie-500' },
+  { name: 'Groq', type: 'STT + LLM', tagline: 'Whisper Large V3. Fast, cheap, default.', dot: 'bg-lemon-500' },
+  { name: 'OpenAI', type: 'STT + LLM', tagline: 'Whisper API · GPT-4o-compatible endpoint.', dot: 'bg-matcha-300' },
+  { name: 'Anthropic', type: 'LLM', tagline: 'Claude Sonnet / Opus. Direct from your browser.', dot: 'bg-pomegranate-400' },
+  { name: 'OpenAI-compatible', type: 'LLM', tagline: 'OpenRouter, LMStudio, Ollama, your own server.', dot: 'bg-slushie-500' },
 ]
 
 export function ProviderGrid() {

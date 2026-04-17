@@ -12,11 +12,11 @@ describe('AudioRecorder', () => {
 
   it('renders RecordButton', () => {
     render(<AudioRecorder {...defaultProps} />)
-    expect(screen.getByText(/aufnahme starten/i)).toBeInTheDocument()
+    expect(screen.getByText(/start recording/i)).toBeInTheDocument()
   })
 
   it('renders file upload area', () => {
     render(<AudioRecorder {...defaultProps} />)
-    expect(screen.getByText(/datei/i)).toBeInTheDocument()
+    expect(screen.getByText(/upload audio/i)).toBeInTheDocument()
   })
 })

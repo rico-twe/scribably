@@ -71,7 +71,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
         console.log('[WP:app] Triggering clean processing')
         process(txResult.text, config.llmProvider.providerId, 'clean', config.language, config.customPrompt)
       }
-      // Prompt-Erstellung nur manuell per Button (zweistufige Pipeline)
+      // Prompt creation is manual only (two-step pipeline)
     }
   }, [txState, txResult])
 
@@ -158,7 +158,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
         <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
         <circle cx="12" cy="12" r="3" />
       </svg>
-      Einstellungen
+      Settings
     </button>
   )
 
@@ -175,7 +175,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
         <div className={`flex flex-col gap-6 transition-all duration-300 ${hasResult ? 'md:w-[380px] md:flex-shrink-0' : 'md:flex-1'} order-2 md:order-1`}>
           <section className="bg-bg-card/80 backdrop-blur-sm border border-border-oat rounded-[24px] shadow-clay p-5">
             <div className="flex items-center justify-between mb-3">
-              <p className="label-uppercase text-text-tertiary">Aufnahme</p>
+              <p className="label-uppercase text-text-tertiary">Recording</p>
               <span className="w-1.5 h-1.5 rounded-full bg-matcha-600 animate-pulse" aria-hidden />
             </div>
             <AudioRecorder
@@ -190,7 +190,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
           {displayRawText && !isViewingHistory && (
             <div className="animate-fade-in bg-bg-card border border-border-oat rounded-[24px] shadow-clay p-5">
               <div className="flex items-center justify-between mb-3">
-                <p className="label-uppercase text-text-tertiary">Rohtext</p>
+                <p className="label-uppercase text-text-tertiary">Raw text</p>
                 <span className="px-2 py-0.5 rounded-full bg-matcha-300/40 text-matcha-800 dark:text-matcha-300 text-[10px] font-clay-ui">STT</span>
               </div>
               <p className="text-xs text-text-secondary leading-relaxed whitespace-pre-wrap">{displayRawText}</p>
@@ -223,11 +223,11 @@ export default function App({ theme, onThemeToggle }: AppProps) {
         <div className={`flex flex-col order-1 md:order-2 min-h-0 transition-all duration-300 ${hasResult ? 'md:flex-1' : 'md:w-[380px]'}`}>
           <div className="flex items-center justify-between mb-3">
             <p className="label-uppercase text-text-tertiary">
-              Ergebnis {isViewingHistory && <span className="ml-2 normal-case tracking-normal text-[10px] font-mono text-ube-800 dark:text-ube-300">· Verlaufseintrag</span>}
+              Result {isViewingHistory && <span className="ml-2 normal-case tracking-normal text-[10px] font-mono text-ube-800 dark:text-ube-300">· History entry</span>}
             </p>
             {hasResult && (
               <span className="px-2 py-0.5 rounded-full bg-ube-300/40 text-ube-800 dark:text-ube-300 text-[10px] font-clay-ui">
-                {displayPromptText ? 'Prompt' : displayCleanedText ? 'Bereinigt' : 'Roh'}
+                {displayPromptText ? 'Prompt' : displayCleanedText ? 'Cleaned' : 'Raw'}
               </span>
             )}
           </div>

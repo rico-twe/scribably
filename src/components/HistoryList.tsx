@@ -13,11 +13,11 @@ interface HistoryListProps {
 function formatRelativeTime(timestamp: number): string {
   const diff = Date.now() - timestamp
   const minutes = Math.floor(diff / 60_000)
-  if (minutes < 1) return 'Gerade eben'
-  if (minutes < 60) return `vor ${minutes} Min.`
+  if (minutes < 1) return 'Just now'
+  if (minutes < 60) return `${minutes} min ago`
   const hours = Math.floor(minutes / 60)
-  if (hours < 24) return `vor ${hours} Std.`
-  return new Date(timestamp).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })
+  if (hours < 24) return `${hours} h ago`
+  return new Date(timestamp).toLocaleDateString('en-US', { day: '2-digit', month: '2-digit', year: '2-digit' })
 }
 
 function formatDuration(seconds: number): string {
@@ -46,7 +46,7 @@ export function HistoryList({ entries, selectedId, onSelect, currentRawText, isV
       {/* Aktuelle Aufnahme */}
       {hasCurrentRecording && (
         <div>
-          <p className="label-uppercase text-text-tertiary mb-2">Aktuelle Aufnahme</p>
+          <p className="label-uppercase text-text-tertiary mb-2">Current recording</p>
           <button
             onClick={() => onSelect(null)}
             className={`
@@ -67,7 +67,7 @@ export function HistoryList({ entries, selectedId, onSelect, currentRawText, isV
       {/* Letzte Aufnahmen */}
       {entries.length > 0 && (
         <div>
-          <p className="label-uppercase text-text-tertiary mb-2">Letzte Aufnahmen</p>
+          <p className="label-uppercase text-text-tertiary mb-2">Recent recordings</p>
           <div className="flex flex-col gap-2">
             {entries.map(entry => {
               const isSelected = entry.id === selectedId
@@ -95,7 +95,7 @@ export function HistoryList({ entries, selectedId, onSelect, currentRawText, isV
                     </span>
                     {entry.cleanedText && (
                       <span className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-ube-300/15 text-ube-600 font-clay-ui">
-                        bereinigt
+                        cleaned
                       </span>
                     )}
                     {entry.promptText && (
@@ -117,25 +117,25 @@ export function HistoryList({ entries, selectedId, onSelect, currentRawText, isV
                   onClick={() => setConfirming(true)}
                   className="w-full label-uppercase text-text-tertiary py-2 px-3 rounded-[8px] border border-border-oat bg-transparent hover:text-pomegranate-400 hover:border-pomegranate-400/60 transition-colors duration-150"
                 >
-                  Historie löschen
+                  Clear history
                 </button>
               ) : (
                 <div className="flex flex-col gap-2 animate-fade-in">
                   <p className="text-[11px] text-text-tertiary text-center font-clay-ui">
-                    Alle Einträge unwiderruflich entfernen?
+                    Remove all entries permanently?
                   </p>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setConfirming(false)}
                       className="flex-1 label-uppercase text-text-secondary py-2 px-3 rounded-[8px] border border-border-oat bg-bg-card hover:bg-border-oat-light/50 transition-colors duration-150"
                     >
-                      Abbrechen
+                      Cancel
                     </button>
                     <button
                       onClick={handleConfirm}
                       className="flex-1 label-uppercase text-white py-2 px-3 rounded-[8px] border border-pomegranate-400 bg-pomegranate-400 hover:-rotate-2 hover:shadow-[-4px_4px_0_0_#000] transition-all duration-200"
                     >
-                      Wirklich löschen
+                      Delete
                     </button>
                   </div>
                 </div>

@@ -32,7 +32,7 @@ describe('HistoryList', () => {
 
   it('renders current recording card when currentRawText is set', () => {
     render(<HistoryList {...defaultProps} currentRawText="Aktuelle Transkription" />)
-    expect(screen.getByText(/Aktuelle Aufnahme/i)).toBeInTheDocument()
+    expect(screen.getByText(/Current recording/i)).toBeInTheDocument()
     expect(screen.getByText(/Aktuelle Transkription/)).toBeInTheDocument()
   })
 
@@ -40,7 +40,7 @@ describe('HistoryList', () => {
     const entries = [makeEntry({ rawText: 'Hallo Welt, das ist ein Test' })]
     render(<HistoryList {...defaultProps} entries={entries} />)
     expect(screen.getByText(/Hallo Welt/)).toBeInTheDocument()
-    expect(screen.getByText(/Letzte Aufnahmen/i)).toBeInTheDocument()
+    expect(screen.getByText(/Recent recordings/i)).toBeInTheDocument()
   })
 
   it('calls onSelect when entry is clicked', async () => {
@@ -79,38 +79,38 @@ describe('HistoryList', () => {
   it('shows badges for cleaned and prompt text', () => {
     const entry = makeEntry({ cleanedText: 'clean', promptText: 'prompt' })
     render(<HistoryList {...defaultProps} entries={[entry]} />)
-    expect(screen.getByText('bereinigt')).toBeInTheDocument()
+    expect(screen.getByText('cleaned')).toBeInTheDocument()
     expect(screen.getByText('prompt')).toBeInTheDocument()
   })
 
   it('does not render clear button when onClear is not provided', () => {
     render(<HistoryList {...defaultProps} entries={[makeEntry()]} />)
-    expect(screen.queryByText(/Historie löschen/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Clear history/i)).not.toBeInTheDocument()
   })
 
   it('shows confirm step on first click, does not call onClear yet', async () => {
     const onClear = vi.fn()
     render(<HistoryList {...defaultProps} entries={[makeEntry()]} onClear={onClear} />)
-    await userEvent.click(screen.getByRole('button', { name: /Historie löschen/i }))
-    expect(screen.getByRole('button', { name: /Wirklich löschen/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Abbrechen/i })).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: /Clear history/i }))
+    expect(screen.getByRole('button', { name: /Delete/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Cancel/i })).toBeInTheDocument()
     expect(onClear).not.toHaveBeenCalled()
   })
 
   it('calls onClear once when confirm is clicked', async () => {
     const onClear = vi.fn()
     render(<HistoryList {...defaultProps} entries={[makeEntry()]} onClear={onClear} />)
-    await userEvent.click(screen.getByRole('button', { name: /Historie löschen/i }))
-    await userEvent.click(screen.getByRole('button', { name: /Wirklich löschen/i }))
+    await userEvent.click(screen.getByRole('button', { name: /Clear history/i }))
+    await userEvent.click(screen.getByRole('button', { name: /Delete/i }))
     expect(onClear).toHaveBeenCalledTimes(1)
   })
 
   it('cancels confirm step without calling onClear', async () => {
     const onClear = vi.fn()
     render(<HistoryList {...defaultProps} entries={[makeEntry()]} onClear={onClear} />)
-    await userEvent.click(screen.getByRole('button', { name: /Historie löschen/i }))
-    await userEvent.click(screen.getByRole('button', { name: /Abbrechen/i }))
+    await userEvent.click(screen.getByRole('button', { name: /Clear history/i }))
+    await userEvent.click(screen.getByRole('button', { name: /Cancel/i }))
     expect(onClear).not.toHaveBeenCalled()
-    expect(screen.getByRole('button', { name: /Historie löschen/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Clear history/i })).toBeInTheDocument()
   })
 })

@@ -13,7 +13,7 @@ const defaultProps = {
 describe('ExportBar', () => {
   it('renders export buttons including LaTeX toggle', () => {
     render(<ExportBar {...defaultProps} />)
-    expect(screen.getByText(/kopieren/i)).toBeInTheDocument()
+    expect(screen.getByText(/^copy$/i)).toBeInTheDocument()
     expect(screen.getByText(/\.md/i)).toBeInTheDocument()
     expect(screen.getByText(/\.txt/i)).toBeInTheDocument()
     expect(screen.getByText(/latex/i)).toBeInTheDocument()
@@ -24,7 +24,7 @@ describe('ExportBar', () => {
     Object.assign(navigator, { clipboard: { writeText } })
 
     render(<ExportBar {...defaultProps} text="copy me" />)
-    await userEvent.click(screen.getByText(/kopieren/i))
+    await userEvent.click(screen.getByText(/^copy$/i))
     expect(writeText).toHaveBeenCalledWith('copy me')
   })
 

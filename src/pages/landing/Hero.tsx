@@ -14,8 +14,8 @@ export function Hero() {
           </div>
 
           <h1 className="font-clay-heading leading-[0.95] text-[56px] md:text-[88px] tracking-[-0.04em] text-text-primary">
-            <span className="block">Sprache.</span>
-            <span className="block">Roh.</span>
+            <span className="block">Speech.</span>
+            <span className="block">Raw.</span>
             <span className="relative inline-block">
               <span className="relative z-10 text-matcha-600 italic">Prompt.</span>
               <span
@@ -26,9 +26,9 @@ export function Hero() {
           </h1>
 
           <p className="mt-8 text-[19px] md:text-[21px] leading-[1.5] text-text-secondary max-w-[540px] tracking-[-0.01em]">
-            WhisperPrompt macht aus gesprochener Sprache brauchbare Prompts.
-            Läuft komplett im Browser, kein Server, kein Account.
-            Nur deine Keys und dein Mikrofon.
+            WhisperPrompt turns spoken language into usable prompts.
+            Runs entirely in your browser — no server, no account.
+            Just your keys and your mic.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-3">
@@ -44,21 +44,21 @@ export function Hero() {
                 </svg>
               }
             >
-              Jetzt aufnehmen
+              Record now
             </CtaButton>
             <CtaButton
               variant="ghost"
               size="lg"
               href="https://github.com/ricotwesten/whisperprompt"
             >
-              Auf GitHub ansehen
+              View on GitHub
             </CtaButton>
           </div>
 
           <dl className="mt-14 grid grid-cols-3 gap-6 max-w-[520px]">
             {[
-              { k: '0', l: 'Server-Roundtrips' },
-              { k: '4', l: 'Provider inbegriffen' },
+              { k: '0', l: 'Server roundtrips' },
+              { k: '4', l: 'Providers included' },
               { k: 'MIT', l: 'Open Source' },
             ].map(item => (
               <div key={item.l} className="border-t border-border-oat pt-3">
@@ -105,21 +105,21 @@ export function Hero() {
               <div className="mt-8 pt-6 border-t border-dashed border-border-oat">
                 <p className="label-uppercase text-text-tertiary mb-2">Transcript</p>
                 <p className="font-mono text-[13px] leading-relaxed text-text-secondary">
-                  Schreib mir eine E-Mail an das Team, kurz halten, freundlicher Ton,
-                  Projektstart am Montag<span className="inline-block w-[8px] h-[14px] align-middle bg-text-primary animate-pulse ml-0.5" />
+                  Write me an email to the team, keep it short, friendly tone,
+                  project kickoff on Monday<span className="inline-block w-[8px] h-[14px] align-middle bg-text-primary animate-pulse ml-0.5" />
                 </p>
               </div>
 
               <div className="mt-4 flex items-center gap-2">
                 <span className="px-2 py-1 rounded-full bg-matcha-300/40 text-matcha-800 text-[11px] font-clay-ui">groq · whisper-large-v3</span>
-                <span className="px-2 py-1 rounded-full bg-ube-300/40 text-ube-800 text-[11px] font-clay-ui">de-DE</span>
+                <span className="px-2 py-1 rounded-full bg-ube-300/40 text-ube-800 text-[11px] font-clay-ui">en-US</span>
               </div>
             </div>
 
             {/* sticker */}
             <div className="absolute -top-6 -left-8 rotate-[-12deg]">
               <div className="px-3 py-1.5 rounded-full bg-lemon-400 border border-black shadow-[-4px_4px_0_0_#000] text-[11px] font-clay-heading tracking-[0.08em] uppercase">
-                Deine Keys. Dein Browser.
+                Your keys. Your browser.
               </div>
             </div>
           </div>

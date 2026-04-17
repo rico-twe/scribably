@@ -9,19 +9,19 @@ export function QRCodeTransfer({ configBase64, onImport }: QRCodeTransferProps) 
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <label className="block label-uppercase text-text-tertiary mb-3">Config teilen</label>
+        <label className="block label-uppercase text-text-tertiary mb-3">Share config</label>
         <div className="inline-block p-3 bg-bg-card rounded-[12px] border border-border-oat shadow-clay">
           <QRCodeSVG value={configBase64} size={120} />
         </div>
         <p className="text-[11px] text-lemon-700 mt-2.5 font-clay-ui">
-          QR-Code enthält API-Keys
+          QR code contains API keys
         </p>
       </div>
       <div>
-        <label className="block label-uppercase text-text-tertiary mb-2">Config importieren</label>
+        <label className="block label-uppercase text-text-tertiary mb-2">Import config</label>
         <input
           type="text"
-          placeholder="Base64-String einfügen..."
+          placeholder="Paste Base64 string..."
           onChange={e => {
             if (e.target.value.length > 10) onImport(e.target.value)
           }}

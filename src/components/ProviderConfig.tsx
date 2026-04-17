@@ -38,7 +38,7 @@ export function ProviderConfig({
         onChange={e => onProviderChange(e.target.value)}
         className={`${inputClass} appearance-none`}
       >
-        <option value="">Provider wählen...</option>
+        <option value="">Select provider...</option>
         {providers.map(p => (
           <option key={p.id} value={p.id}>{p.name}</option>
         ))}
@@ -58,7 +58,7 @@ export function ProviderConfig({
               onClick={() => setShowKey(!showKey)}
               className="absolute right-2 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded-[4px] text-[10px] font-clay-ui text-text-tertiary hover:text-text-secondary hover:bg-border-oat-light/50 transition-colors"
             >
-              {showKey ? 'Verbergen' : 'Zeigen'}
+              {showKey ? 'Hide' : 'Show'}
             </button>
           </div>
           {showBaseUrl && (
@@ -66,7 +66,7 @@ export function ProviderConfig({
               type="text"
               value={baseUrl ?? ''}
               onChange={e => onBaseUrlChange?.(e.target.value)}
-              placeholder="Base URL (z.B. https://api.openai.com/v1)"
+              placeholder="Base URL (e.g. https://api.openai.com/v1)"
               className={inputClass}
             />
           )}
@@ -75,7 +75,7 @@ export function ProviderConfig({
               type="text"
               value={model ?? ''}
               onChange={e => onModelChange?.(e.target.value)}
-              placeholder="Model (z.B. gpt-4o)"
+              placeholder="Model (e.g. gpt-4o)"
               className={inputClass}
             />
           )}

@@ -3,7 +3,7 @@ interface LogoProps {
   showWordmark?: boolean
   showBadge?: boolean
   onClick?: () => void
-  /** Override für den Icon-Hintergrund, z.B. 'bg-white/15' im Footer */
+  /** Override for icon background, e.g. 'bg-white/15' in footer */
   iconBgClassName?: string
 }
 
@@ -66,7 +66,7 @@ export function Logo({
     return (
       <button
         onClick={onClick}
-        aria-label="Zur Startseite"
+        aria-label="Back to home"
         className="flex items-center gap-2.5 group"
       >
         {content}

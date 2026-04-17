@@ -76,12 +76,12 @@ export function useTextProcessing() {
     setError(null)
 
     try {
-      // Schritt 1: Rohtext → Prompt-Engineering → strukturierter Prompt
+      // Step 1: Raw text → prompt engineering → structured prompt
       console.log(`[WP:process:prompt-pipeline] Step 1: Generating prompt via ${providerId} | text length: ${text.length}`)
       const promptResult = await provider.process(text, { mode: 'prompt', language })
       console.log(`[WP:process:prompt-pipeline] Step 1 done | prompt length: ${promptResult.text.length} | tokens: ${promptResult.tokensUsed}`)
 
-      // Schritt 2: Generierten Prompt ausführen → Endergebnis
+      // Step 2: Execute generated prompt → final result
       console.log(`[WP:process:prompt-pipeline] Step 2: Executing generated prompt | length: ${promptResult.text.length}`)
       const executeResult = await provider.process(promptResult.text, { mode: 'execute', language })
       console.log(`[WP:process:prompt-pipeline] Step 2 done | result length: ${executeResult.text.length} | tokens: ${executeResult.tokensUsed}`)

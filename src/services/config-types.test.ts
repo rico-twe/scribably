@@ -2,7 +2,7 @@ import { DEFAULT_CONFIG, type AppConfig } from './config-types'
 
 describe('AppConfig', () => {
   it('has sensible defaults', () => {
-    expect(DEFAULT_CONFIG.language).toBe('de')
+    expect(DEFAULT_CONFIG.language).toBe('en')
     expect(DEFAULT_CONFIG.sttProvider).toBeNull()
     expect(DEFAULT_CONFIG.llmProvider).toBeNull()
   })

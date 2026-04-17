@@ -10,9 +10,9 @@ describe('RecordButton', () => {
     onStopRecording: vi.fn(),
   }
 
-  it('shows "Aufnahme starten" in idle state', () => {
+  it('shows "Start recording" in idle state', () => {
     render(<RecordButton {...defaultProps} />)
-    expect(screen.getByText(/aufnahme starten/i)).toBeInTheDocument()
+    expect(screen.getByText(/start recording/i)).toBeInTheDocument()
   })
 
   it('calls onStartRecording on click in idle state', async () => {
@@ -36,6 +36,6 @@ describe('RecordButton', () => {
 
   it('shows loading indicator in processing state', () => {
     render(<RecordButton {...defaultProps} state="processing" />)
-    expect(screen.getByText(/verarbeite/i)).toBeInTheDocument()
+    expect(screen.getByText(/processing/i)).toBeInTheDocument()
   })
 })

@@ -61,15 +61,15 @@ export function RecordButton({ state, duration, onStartRecording, onStopRecordin
 
       {/* Status text */}
       <span className="text-xs font-clay-ui text-text-tertiary tracking-wide">
-        {state === 'idle' && 'Aufnahme starten'}
+        {state === 'idle' && 'Start recording'}
         {state === 'recording' && (
           <span className="text-pomegranate-400 tabular-nums">{formatDuration(duration)}</span>
         )}
         {state === 'processing' && (
-          <span className="text-slushie-800">Verarbeite...</span>
+          <span className="text-slushie-800">Processing...</span>
         )}
-        {state === 'done' && 'Erneut aufnehmen'}
-        {state === 'error' && <span className="text-pomegranate-400">Erneut versuchen</span>}
+        {state === 'done' && 'Record again'}
+        {state === 'error' && <span className="text-pomegranate-400">Try again</span>}
       </span>
     </div>
   )
