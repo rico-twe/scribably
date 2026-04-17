@@ -23,7 +23,7 @@ const steps: Step[] = [
   {
     num: '02',
     title: 'Transcribe',
-    body: 'STT provider of your choice — Groq Whisper, OpenAI Whisper. Language detection included.',
+    body: 'Pick your STT provider: Groq Whisper or OpenAI Whisper. Language detection included.',
     tone: 'bg-slushie-500/30 text-slushie-800',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -69,8 +69,7 @@ export function PipelineFlow() {
             </h2>
           </div>
           <p className="text-[17px] leading-[1.55] text-text-secondary max-w-[360px]">
-            Each step is independently configurable. You decide where your audio goes —
-            and where it stops.
+            Each step is configurable. You decide where your audio goes. And where it stops.
           </p>
         </div>
 

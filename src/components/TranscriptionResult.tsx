@@ -100,7 +100,7 @@ export function TranscriptionResult({
               <line x1="12" x2="12" y1="19" y2="22" />
             </svg>
             <p className="text-text-tertiary text-xs font-clay-ui">
-              {rawText ? 'Switch tabs or start processing.' : 'Start recording to generate text.'}
+              {rawText ? 'No processed text yet.' : 'Record something to get started.'}
             </p>
           </div>
         )}
@@ -130,7 +130,7 @@ export function TranscriptionResult({
               {isPromptProcessing && (
                 <div className="w-3 h-3 border-[1.5px] border-slushie-800/50 border-t-transparent rounded-full animate-spin-smooth" />
               )}
-              {isPromptProcessing ? 'Creating prompt...' : promptText ? 'Regenerate prompt' : 'Create prompt'}
+              {isPromptProcessing ? 'Generating prompt...' : promptText ? 'Regenerate prompt' : 'Generate prompt'}
             </button>
           )}
         </div>
