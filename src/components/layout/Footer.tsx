@@ -31,7 +31,7 @@ function FullFooter() {
         </div>
         <p className="text-[14px] leading-[1.6] text-white/70 max-w-[320px]">
           Open-source web app that turns spoken language into usable prompts.
-          Runs in your browser, BYOK, MIT license.
+          Runs in your browser, BYOK, Apache-2.0 license.
         </p>
       </div>
 
@@ -39,7 +39,7 @@ function FullFooter() {
         <p className="label-uppercase text-ube-300 mb-3">Project</p>
         <ul className="space-y-2 text-[14px] text-white/85">
           <li><a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a></li>
-          <li><a href={`${GITHUB_URL}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">License · MIT</a></li>
+          <li><a href={`${GITHUB_URL}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">License · Apache-2.0</a></li>
           <li><a href={`${GITHUB_URL}/issues`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Issues</a></li>
         </ul>
       </div>
@@ -68,7 +68,7 @@ function CompactFooter() {
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
       <div className="flex items-center gap-2.5">
         <Logo size="sm" showWordmark iconBgClassName="bg-white/15" />
-        <span className="ml-2 text-[12px] font-mono uppercase tracking-[0.1em] text-white/60">Client-only · BYOK · MIT</span>
+        <span className="ml-2 text-[12px] font-mono uppercase tracking-[0.1em] text-white/60">Client-only · BYOK · Apache-2.0</span>
       </div>
 
       <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[14px] text-white/85 font-clay-ui">

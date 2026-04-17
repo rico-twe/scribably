@@ -10,7 +10,7 @@ export function Hero() {
         <div className="animate-fade-in">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-border-oat shadow-clay mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-matcha-600 animate-pulse" />
-            <span className="label-uppercase text-text-secondary">Client-only · BYOK · MIT</span>
+            <span className="label-uppercase text-text-secondary">Client-only · BYOK · Apache-2.0</span>
           </div>
 
           <h1 className="font-clay-heading leading-[0.95] text-[56px] md:text-[88px] tracking-[-0.04em] text-text-primary">
@@ -59,7 +59,7 @@ export function Hero() {
             {[
               { k: '0', l: 'Server roundtrips' },
               { k: '4', l: 'Providers included' },
-              { k: 'MIT', l: 'Open Source' },
+              { k: 'Apache 2', l: 'Open Source' },
             ].map(item => (
               <div key={item.l} className="border-t border-border-oat pt-3">
                 <dt className="font-clay-heading text-[28px] leading-none text-text-primary tracking-[-0.04em]">
