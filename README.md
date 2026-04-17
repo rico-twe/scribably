@@ -13,7 +13,7 @@ WhisperPrompt is a web app that turns spoken language into clean, usable prompts
 - Transfer config to other devices via QR code
 - Responsive: mobile + desktop
 - Dark theme
-- Open source (MIT)
+- Open source (Apache-2.0)
 
 ## Setup
 
@@ -64,4 +64,8 @@ npx vitest run   # Run tests once
 
 ## License
 
-MIT
+WhisperPrompt core is licensed under the [Apache License 2.0](./LICENSE).
+See [NOTICE](./NOTICE) for attribution requirements.
+
+Optional Pro plugins may be released under a separate commercial license
+in the future — the core will remain open source.

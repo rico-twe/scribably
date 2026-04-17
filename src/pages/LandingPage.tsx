@@ -54,7 +54,7 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
             'BYOK — no proxies, no shared accounts',
             'localStorage only — nothing on a backend',
             'Open source — code is on GitHub',
-            'MIT license: fork it, self-host it, take it apart',
+            'Apache-2.0 — fork it, self-host it, take it apart',
           ]}
           visual={
             <div className="relative">
@@ -262,7 +262,7 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
             </div>
 
             {/* decorative glyphs */}
-            <div aria-hidden className="absolute top-10 left-10 rotate-[-18deg] font-mono text-[12px] text-matcha-800/50">* MIT</div>
+            <div aria-hidden className="absolute top-10 left-10 rotate-[-18deg] font-mono text-[12px] text-matcha-800/50">* Apache-2.0</div>
             <div aria-hidden className="absolute bottom-10 right-10 rotate-[12deg] font-mono text-[12px] text-matcha-800/50">v1 · beta</div>
           </div>
         </div>
