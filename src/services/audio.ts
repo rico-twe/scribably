@@ -11,11 +11,30 @@ export interface AudioRecorderService {
 const MAX_DURATION_MS = 5 * 60 * 1000
 
 function getSupportedMimeType(): string {
-  const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/wav']
+  if (typeof MediaRecorder === 'undefined') {
+    throw new Error('Audio recording is not supported in this browser.')
+  }
+  const types = ['audio/mp4', 'audio/aac', 'audio/webm;codecs=opus', 'audio/webm', 'audio/wav']
   for (const type of types) {
     if (MediaRecorder.isTypeSupported(type)) return type
   }
-  return 'audio/webm'
+  throw new Error('No supported audio format found in this browser.')
+}
+
+function getMediaStream(): Promise<MediaStream> {
+  if (navigator.mediaDevices?.getUserMedia) {
+    return navigator.mediaDevices.getUserMedia({ audio: true })
+  }
+  const legacyGetUserMedia =
+    (navigator as any).getUserMedia ||
+    (navigator as any).webkitGetUserMedia ||
+    (navigator as any).mozGetUserMedia
+  if (legacyGetUserMedia) {
+    return new Promise((resolve, reject) => {
+      legacyGetUserMedia.call(navigator, { audio: true }, resolve, reject)
+    })
+  }
+  throw new Error('Microphone access is not available in this browser.')
 }
 
 export function createAudioRecorder(): AudioRecorderService {
@@ -33,9 +52,9 @@ export function createAudioRecorder(): AudioRecorderService {
 
   const service: AudioRecorderService = {
     async start() {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      chunks = []
       const mimeType = getSupportedMimeType()
+      const stream = await getMediaStream()
+      chunks = []
       mediaRecorder = new MediaRecorder(stream, { mimeType })
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunks.push(e.data)
