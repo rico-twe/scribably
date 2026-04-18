@@ -1,8 +1,8 @@
-# Contributing to WhisperPrompt
+# Contributing to Scribably
 
 ## License
 
-WhisperPrompt core is licensed under the **Apache License 2.0**. By submitting a contribution you agree that your code will be released under the same license (inbound = outbound). No separate CLA required.
+Scribably core is licensed under the **Apache License 2.0**. By submitting a contribution you agree that your code will be released under the same license (inbound = outbound). No separate CLA required.
 
 Optional Pro plugins, if they exist in the future, will live in a separate private repository under a commercial license. Contributions to the core are not affected by this.
 
@@ -41,7 +41,7 @@ External providers (not bundled with the core) can register via `src/plugin-api/
 New source files don't require a full Apache license header. The `LICENSE` and `NOTICE` files at the repo root cover the whole project. A one-line copyright comment is sufficient if you want attribution:
 
 ```ts
-// Copyright 2026 WhisperPrompt Contributors. Apache-2.0 license.
+// Copyright 2026 Scribably Contributors. Apache-2.0 license.
 ```
 
 ## What stays open source

@@ -1,8 +1,8 @@
-# WhisperPrompt
+# Scribably
 
 Speech to prompt — fast, simple, local.
 
-WhisperPrompt is a web app that turns spoken language into clean, usable prompts. Purely client-side — no data is stored on a server.
+Scribably is a web app that turns spoken language into clean, usable prompts. Purely client-side — no data is stored on a server.
 
 ## Features
 
@@ -33,7 +33,7 @@ npm run dev
 
 ### API Keys
 
-WhisperPrompt does not store keys on servers. You need:
+Scribably does not store keys on servers. You need:
 
 1. **STT provider** (at least one):
    - [Groq API key](https://console.groq.com) (recommended — fast + cheap)
@@ -64,7 +64,7 @@ npx vitest run   # Run tests once
 
 ## License
 
-WhisperPrompt core is licensed under the [Apache License 2.0](./LICENSE).
+Scribably core is licensed under the [Apache License 2.0](./LICENSE).
 See [NOTICE](./NOTICE) for attribution requirements.
 
 Optional Pro plugins may be released under a separate commercial license
