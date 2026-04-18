@@ -37,20 +37,18 @@ export function Logo({
           className="text-matcha-800 dark:text-matcha-300"
           aria-hidden
         >
-          {/* Mic stand */}
-          <line x1="16" y1="26" x2="16" y2="29" stroke="currentColor" strokeWidth="2" />
-          <path d="M22 18v1a6 6 0 0 1-12 0v-1" stroke="currentColor" strokeWidth="2" />
-          {/* Speech-bubble mic head */}
-          <rect x="10" y="3" width="12" height="14" rx="4" stroke="currentColor" strokeWidth="2" />
-          {/* Prompt cursor >_ inside bubble */}
-          <path d="M13 8l2 2-2 2" stroke="currentColor" strokeWidth="1.6" />
-          <line x1="17" y1="12" x2="20" y2="12" stroke="currentColor" strokeWidth="1.6" />
+          {/* Pen body */}
+          <path d="M20 6 L23 9 L11 21 L8 18 Z" stroke="currentColor" strokeWidth="2" />
+          {/* Nib */}
+          <path d="M8 18 L6 25 L13 23 Z" fill="currentColor" stroke="none" />
+          {/* Writing baseline */}
+          <line x1="5" y1="27" x2="17" y2="27" stroke="currentColor" strokeWidth="2" />
         </svg>
       </span>
 
       {showWordmark && (
         <span className={`font-clay-heading tracking-[-0.02em] ${textSize}`}>
-          Whisper<span className="italic text-matcha-600 dark:text-matcha-300">Prompt</span>
+          Scrib<span className="italic text-matcha-600 dark:text-matcha-300">ably</span>
         </span>
       )}
 
