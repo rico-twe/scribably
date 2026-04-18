@@ -1,8 +1,8 @@
-# WhisperPrompt — MVP Design Spec
+# Scribably — MVP Design Spec
 
 ## Produktüberblick
 
-WhisperPrompt ist eine rein client-seitige Web-App, mit der Nutzer per Spracheingabe Prompts erstellen. Gesprochene Sprache wird transkribiert, intelligent aufbereitet und als kopierbarer, exportierbarer Prompt bereitgestellt.
+Scribably ist eine rein client-seitige Web-App, mit der Nutzer per Spracheingabe Prompts erstellen. Gesprochene Sprache wird transkribiert, intelligent aufbereitet und als kopierbarer, exportierbarer Prompt bereitgestellt.
 
 **Zielgruppe:** Entwickler, Power User, Prompt Engineers, Content Creator — Menschen die unterwegs oder am Desktop schnell aus gesprochener Sprache saubere Prompts erzeugen wollen.
 

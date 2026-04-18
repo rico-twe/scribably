@@ -26,7 +26,7 @@ export function Hero() {
           </h1>
 
           <p className="mt-8 text-[19px] md:text-[21px] leading-[1.5] text-text-secondary max-w-[540px] tracking-[-0.01em]">
-            WhisperPrompt turns speech into prompts.
+            Scribably turns speech into prompts.
             Runs in your browser. No server, no account.
             Your keys, your mic.
           </p>
