@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import App from './App'
 
 describe('App', () => {
-  it('renders WhisperPrompt header', () => {
+  it('renders Scribably header', () => {
     render(<App theme="cream" onThemeToggle={() => {}} />)
     expect(screen.getByLabelText('Back to home')).toBeInTheDocument()
   })

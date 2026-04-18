@@ -44,7 +44,7 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
           }
           body={
             <>
-              WhisperPrompt is a pure client app. No WhisperPrompt server.
+              Scribably is a pure client app. No Scribably server.
               Nothing logs or forwards anything. API keys stay in your{' '}
               <code className="font-mono text-[14px] bg-white/10 px-1.5 py-0.5 rounded">localStorage</code>,
               audio goes directly from <em>you</em> to <em>your</em> provider.
@@ -119,7 +119,7 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
           }
           body={
             <>
-              Raw text is rarely what you want to send. WhisperPrompt splits
+              Raw text is rarely what you want to send. Scribably splits
               cleanup and prompt construction into two toggleable steps.
               Grab the output at any point.
             </>

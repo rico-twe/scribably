@@ -14,7 +14,7 @@ export function Footer({ variant = 'full' }: FooterProps) {
         {variant === 'full' ? <FullFooter /> : <CompactFooter />}
 
         <div className="mt-12 pt-6 border-t border-white/15 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-[12px] font-mono uppercase tracking-[0.1em] text-white/60">
-          <span>© {new Date().getFullYear()} · WhisperPrompt</span>
+          <span>© {new Date().getFullYear()} · Scribably</span>
           <span>Made with cream, matcha &amp; ube.</span>
         </div>
       </div>
