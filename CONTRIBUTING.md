@@ -10,7 +10,7 @@ Optional Pro plugins, if they exist in the future, will live in a separate priva
 
 ```bash
 git clone <repo-url>
-cd whisperprompt
+cd scribably
 npm install
 npm run dev
 ```
