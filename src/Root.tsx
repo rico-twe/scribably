@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import App from './App'
 import { LandingPage } from './pages/LandingPage'
+import { ImpressumPage } from './pages/ImpressumPage'
+import { DatenschutzPage } from './pages/DatenschutzPage'
 import { useHashRoute } from './hooks/useHashRoute'
 
 export function Root() {
@@ -17,7 +19,8 @@ export function Root() {
 
   const toggleTheme = () => setTheme(t => t === 'dark' ? 'cream' : 'dark')
 
-  return route === 'app'
-    ? <App theme={theme} onThemeToggle={toggleTheme} />
-    : <LandingPage theme={theme} onThemeToggle={toggleTheme} />
+  if (route === 'app') return <App theme={theme} onThemeToggle={toggleTheme} />
+  if (route === 'impressum') return <ImpressumPage theme={theme} onThemeToggle={toggleTheme} />
+  if (route === 'datenschutz') return <DatenschutzPage theme={theme} onThemeToggle={toggleTheme} />
+  return <LandingPage theme={theme} onThemeToggle={toggleTheme} />
 }

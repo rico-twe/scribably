@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 
-export type Route = 'landing' | 'app'
+export type Route = 'landing' | 'app' | 'impressum' | 'datenschutz'
 
 function parseHash(hash: string): Route {
-  return hash === '#/app' ? 'app' : 'landing'
+  if (hash === '#/app') return 'app'
+  if (hash === '#/impressum') return 'impressum'
+  if (hash === '#/datenschutz') return 'datenschutz'
+  return 'landing'
 }
 
 export function useHashRoute(): Route {
@@ -21,5 +24,8 @@ export function useHashRoute(): Route {
 }
 
 export function navigate(route: Route): void {
-  window.location.hash = route === 'app' ? '#/app' : ''
+  if (route === 'app') { window.location.hash = '#/app'; return }
+  if (route === 'impressum') { window.location.hash = '#/impressum'; return }
+  if (route === 'datenschutz') { window.location.hash = '#/datenschutz'; return }
+  window.location.hash = ''
 }
