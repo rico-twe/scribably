@@ -2,6 +2,23 @@
   "name": "whisperprompt",
   "private": true,
   "version": "0.0.0",
+  "description": "Privacy-focused web app that converts speech to clean AI prompts. Record audio or upload files, transcribe with Groq/OpenAI, then refine with AI – all client-side, no data stored.",
+  "keywords": [
+    "speech-to-text",
+    "prompt-engineering",
+    "audio-transcription",
+    "ai",
+    "react",
+    "typescript",
+    "vite",
+    "tailwindcss",
+    "groq",
+    "openai",
+    "anthropic",
+    "privacy",
+    "client-side",
+    "text-processing"
+  ],
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
