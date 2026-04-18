@@ -15,6 +15,10 @@ export function Footer({ variant = 'full' }: FooterProps) {
 
         <div className="mt-12 pt-6 border-t border-white/15 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-[12px] font-mono uppercase tracking-[0.1em] text-white/60">
           <span>© {new Date().getFullYear()} · Scribably</span>
+          <span className="flex items-center gap-4">
+            <button onClick={() => navigate('impressum')} className="hover:text-white/90 transition-colors">Impressum</button>
+            <button onClick={() => navigate('datenschutz')} className="hover:text-white/90 transition-colors">Datenschutz</button>
+          </span>
           <span>Made with cream, matcha &amp; ube.</span>
         </div>
       </div>
