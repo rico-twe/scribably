@@ -97,7 +97,7 @@ export function ImpressumPage({ theme, onThemeToggle }: LegalPageProps) {
             <p className="text-text-secondary">
               Der Quellcode dieser Webanwendung ist unter der{' '}
               <a
-                href="https://github.com/ricotwesten/whisperprompt/blob/main/LICENSE"
+                href="https://github.com/rico-twe/scribably/blob/main/LICENSE"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-ube-600 dark:text-ube-300 hover:underline"

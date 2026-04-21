@@ -6,7 +6,7 @@ import { CtaButton } from './landing/CtaButton'
 import { Layout } from '../components/layout/Layout'
 import { navigate } from '../hooks/useHashRoute'
 
-const GITHUB_URL = 'https://github.com/ricotwesten/whisperprompt'
+const GITHUB_URL = 'https://github.com/rico-twe/scribably'
 
 interface LandingPageProps {
   theme: 'cream' | 'dark'

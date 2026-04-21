@@ -1,8 +1,8 @@
 {
-  "name": "whisperprompt",
+  "name": "scribably",
   "private": true,
   "version": "0.0.0",
-  "description": "Privacy-focused web app that converts speech to clean AI prompts. Record audio or upload files, transcribe with Groq/OpenAI, then refine with AI – all client-side, no data stored.",
+  "description": "Privacy-focused web app that converts speech to clean AI prompts. Record audio or upload files, transcribe with Groq or OpenAI, then refine with OpenAI-compatible or Anthropic LLMs – all client-side, no data stored.",
   "keywords": [
     "speech-to-text",
     "prompt-engineering",

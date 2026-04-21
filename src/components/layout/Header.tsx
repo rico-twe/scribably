@@ -3,7 +3,7 @@ import { Logo } from './Logo'
 import { ThemeToggle } from './ThemeToggle'
 import { navigate } from '../../hooks/useHashRoute'
 
-const GITHUB_URL = 'https://github.com/ricotwesten/whisperprompt'
+const GITHUB_URL = 'https://github.com/rico-twe/scribably'
 
 interface HeaderProps {
   context: 'landing' | 'app'

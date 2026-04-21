@@ -1,7 +1,7 @@
 import { Logo } from './Logo'
 import { navigate } from '../../hooks/useHashRoute'
 
-const GITHUB_URL = 'https://github.com/ricotwesten/whisperprompt'
+const GITHUB_URL = 'https://github.com/rico-twe/scribably'
 
 interface FooterProps {
   variant?: 'compact' | 'full'

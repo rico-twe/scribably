@@ -49,7 +49,7 @@ export function Hero() {
             <CtaButton
               variant="ghost"
               size="lg"
-              href="https://github.com/ricotwesten/whisperprompt"
+              href="https://github.com/rico-twe/scribably"
             >
               View on GitHub
             </CtaButton>
