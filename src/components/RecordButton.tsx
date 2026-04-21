@@ -16,8 +16,10 @@ function formatDuration(seconds: number): string {
 export function RecordButton({ state, duration, onStartRecording, onStopRecording }: RecordButtonProps) {
   const handleClick = () => {
     if (state === 'idle' || state === 'done' || state === 'error') {
+      window.umami?.track('record-start')
       onStartRecording()
     } else if (state === 'recording') {
+      window.umami?.track('record-stop')
       onStopRecording()
     }
   }

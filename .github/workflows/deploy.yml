@@ -25,6 +25,7 @@ jobs:
         env:
           VITE_UMAMI_SRC: ${{ secrets.UMAMI_SRC }}
           VITE_UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
+          VITE_UMAMI_DOMAINS: ${{ secrets.UMAMI_DOMAINS }}
 
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5

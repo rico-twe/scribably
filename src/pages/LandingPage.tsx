@@ -15,7 +15,7 @@ interface LandingPageProps {
 
 export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
   const ctaButton = (
-    <CtaButton size="md" onClick={() => navigate('app')}>
+    <CtaButton size="md" onClick={() => { window.umami?.track('cta-open-app'); navigate('app') }}>
       Open app
     </CtaButton>
   )
@@ -253,7 +253,7 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
               No account needed, nothing to install. Just start talking.
             </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-              <CtaButton size="lg" variant="inverse" onClick={() => navigate('app')}>
+              <CtaButton size="lg" variant="inverse" onClick={() => { window.umami?.track('cta-open-app'); navigate('app') }}>
                 Open app
               </CtaButton>
               <CtaButton size="lg" variant="ghost" href={GITHUB_URL}>

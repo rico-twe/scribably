@@ -38,7 +38,7 @@ export function ExportBar({ text, latexText, disabled, showLatex, onToggleLatex 
 
   return (
     <div className="flex gap-1.5 mt-3">
-      <button onClick={handleCopy} disabled={disabled} className={`${btnClass} hover:bg-slushie-500/10`}>
+      <button onClick={handleCopy} disabled={disabled} data-umami-event="export-copy" className={`${btnClass} hover:bg-slushie-500/10`}>
         {copied ? (
           <>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-matcha-600">
@@ -61,6 +61,7 @@ export function ExportBar({ text, latexText, disabled, showLatex, onToggleLatex 
       <button
         onClick={onToggleLatex}
         disabled={disabled}
+        data-umami-event="export-latex-toggle"
         className={`
           flex items-center gap-1.5 px-3 py-1.5 rounded-[12px] text-xs font-clay-ui transition-all border
           ${showLatex
@@ -77,6 +78,7 @@ export function ExportBar({ text, latexText, disabled, showLatex, onToggleLatex 
         <button
           onClick={() => downloadFile(latexText, 'prompt.tex', 'application/x-latex')}
           disabled={disabled}
+          data-umami-event="export-tex"
           className={`${btnClass} hover:bg-ube-300/10`}
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -91,6 +93,7 @@ export function ExportBar({ text, latexText, disabled, showLatex, onToggleLatex 
           <button
             onClick={() => downloadFile(text, 'prompt.md', 'text/markdown')}
             disabled={disabled}
+            data-umami-event="export-md"
             className={`${btnClass} hover:bg-matcha-300/10`}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -103,6 +106,7 @@ export function ExportBar({ text, latexText, disabled, showLatex, onToggleLatex 
           <button
             onClick={() => downloadFile(text, 'prompt.txt', 'text/plain')}
             disabled={disabled}
+            data-umami-event="export-txt"
             className={`${btnClass} hover:bg-lemon-400/10`}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

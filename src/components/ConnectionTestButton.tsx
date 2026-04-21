@@ -17,9 +17,11 @@ export function ConnectionTestButton({ onTest }: ConnectionTestButtonProps) {
     const result = await onTest()
     if (result.success) {
       setState('success')
+      window.umami?.track('connection-test-success')
     } else {
       setState('error')
       setError(result.error ?? 'Unknown error')
+      window.umami?.track('connection-test-fail')
     }
   }
 

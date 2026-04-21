@@ -23,7 +23,10 @@ export function QRCodeTransfer({ configBase64, onImport }: QRCodeTransferProps) 
           type="text"
           placeholder="Paste Base64 string..."
           onChange={e => {
-            if (e.target.value.length > 10) onImport(e.target.value)
+            if (e.target.value.length > 10) {
+              window.umami?.track('qr-config-import')
+              onImport(e.target.value)
+            }
           }}
           className="w-full bg-bg-card rounded-[4px] px-3 py-2 text-sm text-text-primary border border-border-input focus:outline focus:outline-2 focus:outline-[rgb(20,110,245)] transition-colors placeholder:text-text-tertiary"
         />

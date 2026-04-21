@@ -35,7 +35,10 @@ export function ProviderConfig({
       <label className="block label-uppercase text-text-tertiary">{label}</label>
       <select
         value={selectedId ?? ''}
-        onChange={e => onProviderChange(e.target.value)}
+        onChange={e => {
+          window.umami?.track('provider-selected', { provider: e.target.value })
+          onProviderChange(e.target.value)
+        }}
         className={`${inputClass} appearance-none`}
       >
         <option value="">Select provider...</option>

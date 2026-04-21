@@ -10,7 +10,14 @@ function umamiPlugin(env: Record<string, string>): Plugin {
       const src = env.VITE_UMAMI_SRC
       const websiteId = env.VITE_UMAMI_WEBSITE_ID
       if (!src || !websiteId) return []
-      return [{ tag: 'script', attrs: { defer: true, src, 'data-website-id': websiteId }, injectTo: 'head' }]
+      const attrs: Record<string, string | boolean> = {
+        defer: true,
+        src,
+        'data-website-id': websiteId,
+        'data-do-not-track': 'true',
+      }
+      if (env.VITE_UMAMI_DOMAINS) attrs['data-domains'] = env.VITE_UMAMI_DOMAINS
+      return [{ tag: 'script', attrs, injectTo: 'head' }]
     },
   }
 }

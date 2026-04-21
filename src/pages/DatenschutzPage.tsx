@@ -80,7 +80,10 @@ export function DatenschutzPage({ theme, onThemeToggle }: LegalPageProps) {
 
             <p className="font-medium mb-1 text-[0.9rem]">Analyse-Tools und Tools von Drittanbietern</p>
             <p className="text-text-secondary">
-              Diese Website verwendet keine Analyse-Tools, Tracking-Software oder Werbecookies.
+              Diese Website nutzt <strong>Umami</strong> – eine datenschutzfreundliche
+              Webanalyse-Software, die wir selbst betreiben. Umami setzt keine Cookies und
+              speichert keine personenbezogenen Daten dauerhaft. Weitere Informationen finden
+              Sie im Abschnitt „Webanalyse mit Umami".
             </p>
           </section>
 
@@ -287,7 +290,11 @@ export function DatenschutzPage({ theme, onThemeToggle }: LegalPageProps) {
               Benutzereinstellungen (z. B. Farbschema) und von Ihnen eingegebenen API-Schlüsseln
               wird ausschließlich der <strong>localStorage</strong> Ihres Browsers verwendet. Diese
               Daten verbleiben lokal auf Ihrem Gerät und werden nicht an Server übertragen.
-              Sie können diese Daten jederzeit über die Entwicklerwerkzeuge Ihres Browsers löschen.
+              Das Webanalyse-Tool Umami speichert ebenfalls <strong>keine</strong> Daten im
+              localStorage oder in Cookies – es werden keine Tracking-Informationen auf Ihrem
+              Endgerät abgelegt.
+              Sie können alle localStorage-Daten jederzeit über die Entwicklerwerkzeuge Ihres
+              Browsers löschen.
             </p>
 
             <h3 className="font-semibold mb-2 text-[0.95rem]">Audioverarbeitung</h3>
@@ -363,6 +370,87 @@ export function DatenschutzPage({ theme, onThemeToggle }: LegalPageProps) {
               Art. 6 Abs. 1 lit. b DSGVO, sofern Ihre Anfrage mit der Erfüllung eines Vertrags
               zusammenhängt, oder auf unserem berechtigten Interesse an der effektiven Bearbeitung
               der an uns gerichteten Anfragen (Art. 6 Abs. 1 lit. f DSGVO).
+            </p>
+          </section>
+
+          {/* 5 */}
+          <section>
+            <h2 className="text-[1.25rem] font-bold font-clay-display mb-4 text-text-primary">
+              5. Webanalyse mit Umami
+            </h2>
+
+            <h3 className="font-semibold mb-2 text-[0.95rem]">Was ist Umami?</h3>
+            <p className="mb-4 text-text-secondary">
+              Diese Website nutzt <strong>Umami</strong>, eine Open-Source-Software zur anonymen
+              Webanalyse. Wir betreiben Umami auf eigener Infrastruktur in der Europäischen Union;
+              Daten werden nicht an Dritte übermittelt.
+            </p>
+
+            <h3 className="font-semibold mb-2 text-[0.95rem]">Welche Daten werden erfasst?</h3>
+            <p className="mb-2 text-text-secondary">
+              Beim Seitenaufruf übermittelt Ihr Browser technische Informationen, die Umami
+              ausschließlich zur statistischen Auswertung verwendet:
+            </p>
+            <ul className="list-disc pl-5 space-y-1 mb-4 text-text-secondary">
+              <li>Aufgerufene URL und Seitentitel</li>
+              <li>Referrer (die Seite, von der Sie kamen)</li>
+              <li>Browsertyp und Betriebssystem (aus dem User-Agent-Header)</li>
+              <li>Bildschirmauflösung und Browsersprache</li>
+              <li>Herkunftsland (grobe Geolokalisierung aus der IP-Adresse)</li>
+              <li>Interaktionsereignisse (z. B. Aufnahme starten, Export-Format)</li>
+            </ul>
+            <p className="mb-4 text-text-secondary">
+              Ihre <strong>IP-Adresse</strong> wird von Umami ausschließlich transient zur
+              Berechnung eines anonymen Sitzungsbezeichners verwendet und <strong>nicht dauerhaft
+              gespeichert</strong>. Der Sitzungsbezeichner ist ein Hash aus Website-ID, User-Agent,
+              IP-Adresse und einem monatlich rotierenden Salt – er ist nicht über Monatsintervalle
+              hinweg nachverfolgbar und erlaubt keine Identifizierung einzelner Personen.
+            </p>
+
+            <h3 className="font-semibold mb-2 text-[0.95rem]">Cookies und Endgeräte-Speicher</h3>
+            <p className="mb-4 text-text-secondary">
+              Umami setzt <strong>keine Cookies</strong> und legt <strong>keine Daten im
+              localStorage</strong> oder anderen Endgeräte-Speichern ab. TTDSG § 25 ist daher
+              nicht einschlägig; ein Cookie-Consent-Banner ist nicht erforderlich.
+            </p>
+
+            <h3 className="font-semibold mb-2 text-[0.95rem]">Do Not Track</h3>
+            <p className="mb-4 text-text-secondary">
+              Unsere Umami-Integration respektiert das <strong>Do-Not-Track-Signal</strong> Ihres
+              Browsers. Wenn Sie in den Einstellungen Ihres Browsers DNT aktivieren, werden keine
+              Analysedaten an Umami übermittelt.
+            </p>
+
+            <h3 className="font-semibold mb-2 text-[0.95rem]">Rechtsgrundlage</h3>
+            <p className="mb-4 text-text-secondary">
+              Die Verarbeitung erfolgt auf Grundlage von{' '}
+              <strong>Art. 6 Abs. 1 lit. f DSGVO</strong> (berechtigtes Interesse). Unser
+              berechtigtes Interesse besteht in der anonymen statistischen Auswertung der
+              Website-Nutzung zur Verbesserung des Angebots. Da keine personenbezogenen Daten
+              dauerhaft gespeichert werden, keine Cookies gesetzt werden und das DNT-Signal
+              berücksichtigt wird, überwiegen unsere Interessen die Interessen der betroffenen
+              Personen.
+            </p>
+
+            <h3 className="font-semibold mb-2 text-[0.95rem]">Speicherdauer</h3>
+            <p className="mb-4 text-text-secondary">
+              Aggregierte Statistikdaten werden für maximal 14 Monate gespeichert und danach
+              automatisch gelöscht.
+            </p>
+
+            <h3 className="font-semibold mb-2 text-[0.95rem]">Widerspruchsrecht</h3>
+            <p className="text-text-secondary">
+              Sie können der Verarbeitung jederzeit widersprechen, indem Sie das{' '}
+              <strong>Do-Not-Track-Signal</strong> in Ihrem Browser aktivieren (Firefox:
+              Einstellungen → Datenschutz &amp; Sicherheit → „Websites mitteilen, keine Daten zu
+              sammeln") oder uns per E-Mail unter{' '}
+              <a
+                href="mailto:hello@scribably.com"
+                className="text-ube-600 dark:text-ube-300 hover:underline"
+              >
+                hello@scribably.com
+              </a>{' '}
+              kontaktieren. Im Falle eines Widerspruchs werden keine Analysedaten mehr erhoben.
             </p>
           </section>
 
