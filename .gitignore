@@ -34,5 +34,6 @@ docs/*
 DESIGN.md
 DESIGN-personalized.md
 CLAUDE.md
+AGENTS.md
 
 .vite/*
