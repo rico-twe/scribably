@@ -3,6 +3,7 @@ import { PipelineFlow } from './landing/PipelineFlow'
 import { FeatureSection } from './landing/FeatureSection'
 import { ProviderGrid } from './landing/ProviderGrid'
 import { CtaButton } from './landing/CtaButton'
+import { FaqSection } from './landing/FaqSection'
 import { Layout } from '../components/layout/Layout'
 import { navigate } from '../hooks/useHashRoute'
 
@@ -240,6 +241,8 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
           </div>
         </div>
       </section>
+
+      <FaqSection />
 
       {/* Final CTA */}
       <section className="px-4 md:px-6 pb-10">

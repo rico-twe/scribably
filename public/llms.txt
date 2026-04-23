@@ -1,0 +1,33 @@
+# Scribably
+
+> Scribably converts speech into structured AI prompts — entirely in your browser. No server, no logs, no account required. Free and open source (Apache-2.0).
+
+## What Scribably does
+
+- Records audio via microphone or accepts uploaded files
+- Transcribes speech using Groq Whisper or OpenAI Whisper (STT)
+- Cleans raw transcripts (removes filler words, fixes sentence structure)
+- Converts cleaned text into structured AI prompts via LLM
+- Sends requests directly from the browser to the user-chosen provider — no Scribably proxy
+- Supports Groq, OpenAI-compatible APIs, and Anthropic Claude for text processing
+- Exports output as clipboard, .txt, .md, LaTeX, or QR code for mobile transfer
+- API keys stored only in browser localStorage — never transmitted to Scribably
+
+## Privacy model
+
+Scribably is a pure client-side application. There is no Scribably backend. Audio and text go directly from the user's browser to their chosen AI provider. Scribably infrastructure never sees the data. Analytics via self-hosted Umami (cookie-free, no personal data stored).
+
+## BYOK (Bring Your Own Key)
+
+Users supply their own API keys for Groq, OpenAI, or Anthropic. No shared access, no subscription tier. Keys are stored in browser localStorage and can be transferred to other devices via QR code (Base64-encoded config).
+
+## Licensing & source
+
+- License: Apache-2.0
+- Source code: https://github.com/rico-twe/scribably
+- Live app: https://scribably.com
+- Contact: hello@scribably.com
+
+## Intended audience
+
+Developers, researchers, writers, and privacy-conscious users who want to dictate AI prompts without a SaaS subscription or server dependency.

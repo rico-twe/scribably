@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Scribably turns speech into polished AI prompts — entirely in your browser. Bring your own Groq or OpenAI key, keep data local. Free and open source." />
+    <meta name="description" content="Scribably turns speech into polished AI prompts — entirely in your browser. Bring your own Groq or OpenAI key, keep data local. Free and open source. Try it free — no signup." />
     <meta name="author" content="Scribably" />
     <meta name="theme-color" content="#fafaf7" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1a1a17" media="(prefers-color-scheme: dark)" />
@@ -20,7 +20,7 @@
     <meta property="og:image" content="https://scribably.com/og/scribably-cover.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:locale" content="en" />
+    <meta property="og:locale" content="en_US" />
 
     <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -42,13 +42,18 @@
       "description": "Privacy-focused web app that converts speech to clean AI prompts. Runs entirely in the browser, bring your own key, no server.",
       "applicationCategory": "ProductivityApplication",
       "operatingSystem": "Any modern web browser",
+      "image": "https://scribably.com/og/scribably-cover.png",
+      "author": {
+        "@type": "Organization",
+        "name": "Scribably",
+        "url": "https://scribably.com"
+      },
       "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "USD"
       },
       "license": "https://github.com/rico-twe/scribably/blob/main/LICENSE",
-      "codeRepository": "https://github.com/rico-twe/scribably",
       "featureList": [
         "Speech-to-text transcription via Groq or OpenAI",
         "AI prompt generation and text cleanup",
@@ -73,9 +78,20 @@
     }
     </script>
 
+    <!-- JSON-LD: WebSite -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Scribably",
+      "url": "https://scribably.com"
+    }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" /></noscript>
 
     <title>Scribably — Speech to AI Prompts in Your Browser</title>
     <script>

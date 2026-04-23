@@ -1,9 +1,12 @@
 User-agent: *
 Allow: /
-Disallow: /app
+Disallow: /app/
 
 # AI crawlers — allowed (open-source project, AI visibility is a feature)
 User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
 Allow: /
 
 User-agent: ClaudeBot
