@@ -1,14 +1,83 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Turn spoken language into usable prompts. Runs entirely in your browser." />
+    <meta name="description" content="Scribably turns speech into polished AI prompts — entirely in your browser. Bring your own Groq or OpenAI key, keep data local. Free and open source." />
+    <meta name="author" content="Scribably" />
+    <meta name="theme-color" content="#fafaf7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a17" media="(prefers-color-scheme: dark)" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://scribably.com/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://scribably.com/" />
+    <meta property="og:site_name" content="Scribably" />
+    <meta property="og:title" content="Scribably — Speech to AI Prompts in Your Browser" />
+    <meta property="og:description" content="Scribably turns speech into polished AI prompts — entirely in your browser. Bring your own Groq or OpenAI key, keep data local. Free and open source." />
+    <meta property="og:image" content="https://scribably.com/og/scribably-cover.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Scribably — Speech to AI Prompts in Your Browser" />
+    <meta name="twitter:description" content="Scribably turns speech into polished AI prompts — entirely in your browser. Bring your own Groq or OpenAI key, keep data local. Free and open source." />
+    <meta name="twitter:image" content="https://scribably.com/og/scribably-cover.png" />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- JSON-LD: SoftwareApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Scribably",
+      "url": "https://scribably.com",
+      "description": "Privacy-focused web app that converts speech to clean AI prompts. Runs entirely in the browser, bring your own key, no server.",
+      "applicationCategory": "ProductivityApplication",
+      "operatingSystem": "Any modern web browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "license": "https://github.com/rico-twe/scribably/blob/main/LICENSE",
+      "codeRepository": "https://github.com/rico-twe/scribably",
+      "featureList": [
+        "Speech-to-text transcription via Groq or OpenAI",
+        "AI prompt generation and text cleanup",
+        "Privacy-first, client-side only — no server",
+        "Bring your own API key (BYOK)",
+        "Multi-provider support: Groq, OpenAI, Anthropic",
+        "Export to clipboard, .txt, .md, LaTeX",
+        "QR code config transfer"
+      ]
+    }
+    </script>
+
+    <!-- JSON-LD: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Scribably",
+      "url": "https://scribably.com",
+      "email": "hello@scribably.com",
+      "sameAs": ["https://github.com/rico-twe/scribably"]
+    }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Scribably</title>
+
+    <title>Scribably — Speech to AI Prompts in Your Browser</title>
     <script>
       (function() {
         var t = localStorage.getItem('wp-theme');

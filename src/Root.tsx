@@ -4,9 +4,36 @@ import { LandingPage } from './pages/LandingPage'
 import { ImpressumPage } from './pages/ImpressumPage'
 import { DatenschutzPage } from './pages/DatenschutzPage'
 import { useHashRoute } from './hooks/useHashRoute'
+import { usePageMeta } from './hooks/usePageMeta'
 
-export function Root() {
-  const route = useHashRoute()
+const PAGE_META: Record<string, { title: string; description: string }> = {
+  landing: {
+    title: 'Scribably — Speech to AI Prompts in Your Browser',
+    description: 'Scribably turns speech into polished AI prompts — entirely in your browser. Bring your own Groq or OpenAI key, keep data local. Free and open source.',
+  },
+  app: {
+    title: 'Scribably · App',
+    description: 'Record audio or upload a file and convert speech to clean AI prompts. Client-side only, bring your own key.',
+  },
+  impressum: {
+    title: 'Impressum · Scribably',
+    description: 'Impressum und Anbieterkennzeichnung gemäß § 5 TMG für Scribably.',
+  },
+  datenschutz: {
+    title: 'Datenschutz · Scribably',
+    description: 'Datenschutzerklärung für Scribably — eine reine Client-Anwendung ohne eigenen Server.',
+  },
+}
+
+interface RootProps {
+  ssrPathname?: string
+}
+
+export function Root({ ssrPathname }: RootProps = {}) {
+  const route = useHashRoute(ssrPathname)
+  const meta = PAGE_META[route]
+  usePageMeta(meta.title, meta.description)
+
   const [theme, setTheme] = useState<'cream' | 'dark'>(() => {
     try { return localStorage.getItem('wp-theme') === 'dark' ? 'dark' : 'cream' }
     catch { return 'cream' }

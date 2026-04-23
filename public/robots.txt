@@ -1,2 +1,18 @@
 User-agent: *
 Allow: /
+Disallow: /app
+
+# AI crawlers — allowed (open-source project, AI visibility is a feature)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://scribably.com/sitemap.xml

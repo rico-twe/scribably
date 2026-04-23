@@ -3,55 +3,56 @@ import { useEffect, useState } from 'react'
 export type Route = 'landing' | 'app' | 'impressum' | 'datenschutz'
 
 const ROUTE_TITLES: Record<Route, string> = {
-  landing: 'Scribably',
+  landing: 'Scribably — Speech to AI Prompts in Your Browser',
   app: 'Scribably · App',
   impressum: 'Scribably · Impressum',
   datenschutz: 'Scribably · Datenschutz',
 }
 
-const ROUTE_URLS: Record<Route, string> = {
+const ROUTE_PATHS: Record<Route, string> = {
   landing: '/',
-  app: '/#/app',
-  impressum: '/#/impressum',
-  datenschutz: '/#/datenschutz',
+  app: '/app',
+  impressum: '/impressum',
+  datenschutz: '/datenschutz',
 }
 
-function parseHash(hash: string): Route {
-  if (hash === '#/app') return 'app'
-  if (hash === '#/impressum') return 'impressum'
-  if (hash === '#/datenschutz') return 'datenschutz'
+function parsePath(pathname: string): Route {
+  if (pathname === '/app') return 'app'
+  if (pathname === '/impressum') return 'impressum'
+  if (pathname === '/datenschutz') return 'datenschutz'
   return 'landing'
 }
 
 function trackRoute(route: Route): void {
   window.umami?.track(props => ({
     ...props,
-    url: ROUTE_URLS[route],
+    url: ROUTE_PATHS[route],
     title: ROUTE_TITLES[route],
   }))
 }
 
-export function useHashRoute(): Route {
-  const [route, setRoute] = useState<Route>(() =>
-    typeof window === 'undefined' ? 'landing' : parseHash(window.location.hash)
-  )
+export function useHashRoute(ssrPathname?: string): Route {
+  const [route, setRoute] = useState<Route>(() => {
+    if (ssrPathname !== undefined) return parsePath(ssrPathname)
+    if (typeof window === 'undefined') return 'landing'
+    return parsePath(window.location.pathname)
+  })
 
   useEffect(() => {
-    const onChange = () => {
-      const next = parseHash(window.location.hash)
+    const onPopState = () => {
+      const next = parsePath(window.location.pathname)
       setRoute(next)
       trackRoute(next)
     }
-    window.addEventListener('hashchange', onChange)
-    return () => window.removeEventListener('hashchange', onChange)
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
   }, [])
 
   return route
 }
 
 export function navigate(route: Route): void {
-  if (route === 'app') { window.location.hash = '#/app'; return }
-  if (route === 'impressum') { window.location.hash = '#/impressum'; return }
-  if (route === 'datenschutz') { window.location.hash = '#/datenschutz'; return }
-  window.location.hash = ''
+  const path = ROUTE_PATHS[route]
+  history.pushState(null, '', path)
+  window.dispatchEvent(new PopStateEvent('popstate', { state: null }))
 }
