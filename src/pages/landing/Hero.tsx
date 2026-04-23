@@ -14,8 +14,8 @@ export function Hero() {
           </div>
 
           <h1 className="font-clay-heading leading-[0.95] text-[56px] md:text-[88px] tracking-[-0.04em] text-text-primary">
-            <span className="block">Speech to</span>
-            <span className="block">AI</span>
+            <span className="block">Speech</span>
+            <span className="block">to AI</span>
             <span className="relative inline-block">
               <span className="relative z-10 text-matcha-600 italic">Prompt.</span>
               <span
