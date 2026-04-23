@@ -8,7 +8,7 @@ export interface HistoryEntry {
   promptText: string | null
 }
 
-const STORAGE_KEY = 'whisperprompt-history'
+const STORAGE_KEY = 'scribably-history'
 const MAX_ENTRIES = 10
 
 export function loadHistory(): HistoryEntry[] {

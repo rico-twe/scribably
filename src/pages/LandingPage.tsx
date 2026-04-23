@@ -61,7 +61,7 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
             <div className="relative">
               <div className="bg-black/20 border border-white/10 rounded-[24px] p-6 font-mono text-[12.5px] leading-[1.8] backdrop-blur">
                 <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
-                  <span className="text-matcha-300">~ / whisperprompt</span>
+                  <span className="text-matcha-300">~ / scribably</span>
                   <span className="opacity-50">localStorage</span>
                 </div>
                 <div className="space-y-1">

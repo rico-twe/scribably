@@ -50,12 +50,12 @@ describe('history service', () => {
 
   it('limits to 10 entries on load', () => {
     const entries = Array.from({ length: 15 }, () => makeEntry())
-    localStorage.setItem('whisperprompt-history', JSON.stringify(entries))
+    localStorage.setItem('scribably-history', JSON.stringify(entries))
     expect(loadHistory()).toHaveLength(10)
   })
 
   it('returns empty array on corrupt JSON', () => {
-    localStorage.setItem('whisperprompt-history', 'not json')
+    localStorage.setItem('scribably-history', 'not json')
     expect(loadHistory()).toEqual([])
   })
 })

@@ -1,6 +1,6 @@
 import { type AppConfig, DEFAULT_CONFIG } from './config-types'
 
-const STORAGE_KEY = 'whisperprompt-config'
+const STORAGE_KEY = 'scribably-config'
 
 export function loadConfig(): AppConfig {
   try {
