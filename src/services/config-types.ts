@@ -12,6 +12,7 @@ export interface AppConfig {
   customPrompt?: string;
   enableCleaning?: boolean;
   enablePrompt?: boolean;
+  audioDeviceId?: string;
 }
 
 export const DEFAULT_CONFIG: AppConfig = {
