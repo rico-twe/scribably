@@ -28,7 +28,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   const { state: tpState, cleanState, promptState, cleanedText, setCleanedText, promptText, error: tpError, process } = useTextProcessing()
   const { entries: historyEntries, addEntry, updateLatest, selectedEntry, selectEntry, clearHistory } = useHistory()
   const lastSavedTxRef = useRef<string | null>(null)
-  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(() => !isConfigured(config))
   const [showLatex, setShowLatex] = useState(false)
 
   const processingEnabled = config.enableCleaning || config.enablePrompt
@@ -42,10 +42,6 @@ export default function App({ theme, onThemeToggle }: AppProps) {
     })
     initializeProviders(config)
   }, [config])
-
-  useEffect(() => {
-    if (!isConfigured(config)) setSettingsOpen(true)
-  }, [])
 
   useEffect(() => {
     if (audioBlob && config.sttProvider) {
