@@ -23,7 +23,7 @@ interface AppProps {
 
 export default function App({ theme, onThemeToggle }: AppProps) {
   const { config, updateConfig } = useConfig()
-  const { state: recState, duration, audioBlob, error: recError, startRecording, stopRecording } = useAudioRecorder()
+  const { state: recState, duration, audioBlob, error: recError, warning: recWarning, startRecording, stopRecording } = useAudioRecorder(config.audioDeviceId ?? undefined)
   const { state: txState, result: txResult, error: txError, transcribe } = useTranscription()
   const { state: tpState, cleanState, promptState, cleanedText, setCleanedText, promptText, error: tpError, process } = useTextProcessing()
   const { entries: historyEntries, addEntry, updateLatest, selectedEntry, selectEntry, clearHistory } = useHistory()
@@ -194,6 +194,15 @@ export default function App({ theme, onThemeToggle }: AppProps) {
                 <span className="px-2 py-0.5 rounded-full bg-matcha-300/40 text-matcha-800 dark:text-matcha-300 text-[10px] font-clay-ui">STT</span>
               </div>
               <p className="text-xs text-text-secondary leading-relaxed whitespace-pre-wrap">{displayRawText}</p>
+            </div>
+          )}
+
+          {recWarning && (
+            <div className="animate-fade-in flex items-start gap-2 px-3 py-2 rounded-[8px] bg-lemon-400/10 border border-lemon-400/30">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-lemon-600 mt-0.5 flex-shrink-0">
+                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" x2="12" y1="9" y2="13" /><line x1="12" x2="12.01" y1="17" y2="17" />
+              </svg>
+              <p className="text-lemon-700 dark:text-lemon-400 text-xs leading-relaxed">{recWarning}</p>
             </div>
           )}
 

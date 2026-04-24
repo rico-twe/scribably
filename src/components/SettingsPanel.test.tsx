@@ -1,7 +1,21 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SettingsPanel } from './SettingsPanel'
 import { DEFAULT_CONFIG } from '../services/config-types'
+
+vi.mock('../services/audio', () => ({
+  listAudioInputDevices: vi.fn().mockResolvedValue([
+    { deviceId: 'mic-1', label: 'Built-in Mic' },
+    { deviceId: 'mic-2', label: 'USB Mic' },
+  ]),
+  testSTTConnection: vi.fn(),
+  testLLMConnection: vi.fn(),
+}))
+
+vi.mock('../services/connection-test', () => ({
+  testSTTConnection: vi.fn(),
+  testLLMConnection: vi.fn(),
+}))
 
 describe('SettingsPanel', () => {
   const defaultProps = {
@@ -58,5 +72,22 @@ describe('SettingsPanel', () => {
     render(<SettingsPanel {...defaultProps} onConfigChange={onConfigChange} />)
     await userEvent.type(screen.getByPlaceholderText(/custom instructions/i), 'Test')
     expect(onConfigChange).toHaveBeenCalled()
+  })
+
+  it('renders microphone select with audioinput devices', async () => {
+    render(<SettingsPanel {...defaultProps} />)
+    await waitFor(() => {
+      expect(screen.getByText('Built-in Mic')).toBeInTheDocument()
+      expect(screen.getByText('USB Mic')).toBeInTheDocument()
+    })
+  })
+
+  it('calls onConfigChange with audioDeviceId when mic selected', async () => {
+    const onConfigChange = vi.fn()
+    render(<SettingsPanel {...defaultProps} onConfigChange={onConfigChange} />)
+    await waitFor(() => screen.getByText('Built-in Mic'))
+    const select = screen.getByDisplayValue('Default')
+    await userEvent.selectOptions(select, 'mic-2')
+    expect(onConfigChange).toHaveBeenCalledWith({ audioDeviceId: 'mic-2' })
   })
 })
