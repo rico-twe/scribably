@@ -1,0 +1,18 @@
+name: Auto merge dependabot
+
+on:
+  pull_request:
+
+jobs:
+  automerge:
+    if: github.actor == 'dependabot[bot]' &&
+        (
+          contains(github.event.pull_request.labels.*.name, 'version-update:semver-patch') ||
+          contains(github.event.pull_request.labels.*.name, 'version-update:semver-minor')
+        )
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          merge-method: squash
