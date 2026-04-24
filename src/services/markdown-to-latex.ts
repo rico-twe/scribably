@@ -16,7 +16,7 @@ function escapeLatex(text: string): string {
 function processInlineText(raw: string): string {
   // Split on inline code/bold/italic boundaries, escape only plain text
   const parts: string[] = []
-  let remaining = raw
+  const remaining = raw
 
   const inlinePattern = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`|\[(.+?)\]\((.+?)\))/g
   let lastIndex = 0
