@@ -1,4 +1,4 @@
-import { createAudioRecorder } from './audio'
+import { createAudioRecorder, listAudioInputDevices } from './audio'
 
 class MockMediaRecorder {
   state = 'inactive' as 'inactive' | 'recording'
@@ -20,13 +20,21 @@ class MockMediaRecorder {
   static isTypeSupported(type: string) { return type === 'audio/webm' }
 }
 
+const mockGetUserMedia = vi.fn().mockResolvedValue({
+  getTracks: () => [{ stop: vi.fn() }],
+})
+
 beforeAll(() => {
   (globalThis as any).MediaRecorder = MockMediaRecorder
   Object.defineProperty(globalThis.navigator, 'mediaDevices', {
     value: {
-      getUserMedia: vi.fn().mockResolvedValue({
-        getTracks: () => [{ stop: vi.fn() }],
-      }),
+      getUserMedia: mockGetUserMedia,
+      enumerateDevices: vi.fn().mockResolvedValue([
+        { kind: 'audioinput', deviceId: 'mic-1', label: 'Built-in Mic' },
+        { kind: 'audioinput', deviceId: 'mic-2', label: 'USB Mic' },
+        { kind: 'videoinput', deviceId: 'cam-1', label: 'Webcam' },
+        { kind: 'audiooutput', deviceId: 'spk-1', label: 'Speaker' },
+      ]),
     },
     writable: true,
   })
@@ -70,5 +78,40 @@ describe('AudioRecorderService', () => {
   it('rejects stop when not recording', async () => {
     const recorder = createAudioRecorder()
     await expect(recorder.stop()).rejects.toThrow('No active recording')
+  })
+})
+
+describe('deviceId support', () => {
+  beforeEach(() => { mockGetUserMedia.mockClear() })
+
+  it('passes exact deviceId constraint to getUserMedia', async () => {
+    const recorder = createAudioRecorder({ deviceId: 'mic-1' })
+    await recorder.start()
+    expect(mockGetUserMedia).toHaveBeenCalledWith({
+      audio: { deviceId: { exact: 'mic-1' } },
+    })
+    await recorder.stop()
+  })
+
+  it('falls back to default mic on OverconstrainedError', async () => {
+    const err = Object.assign(new Error('Overconstrained'), { name: 'OverconstrainedError' })
+    mockGetUserMedia
+      .mockRejectedValueOnce(err)
+      .mockResolvedValueOnce({ getTracks: () => [{ stop: vi.fn() }] })
+    const recorder = createAudioRecorder({ deviceId: 'missing-mic' })
+    await recorder.start()
+    expect(recorder.usedFallback).toBe(true)
+    expect(mockGetUserMedia).toHaveBeenCalledTimes(2)
+    expect(mockGetUserMedia).toHaveBeenLastCalledWith({ audio: true })
+    await recorder.stop()
+  })
+})
+
+describe('listAudioInputDevices', () => {
+  it('returns only audioinput devices', async () => {
+    const devices = await listAudioInputDevices()
+    expect(devices).toHaveLength(2)
+    expect(devices.every(d => d.deviceId && d.label)).toBe(true)
+    expect(devices.map(d => d.deviceId)).toEqual(['mic-1', 'mic-2'])
   })
 })

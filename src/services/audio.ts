@@ -6,6 +6,7 @@ export interface AudioRecorderService {
   getState(): RecordingState;
   getDuration(): number;
   onStateChange(callback: (state: RecordingState) => void): () => void;
+  usedFallback: boolean;
 }
 
 const MAX_DURATION_MS = 5 * 60 * 1000
@@ -21,9 +22,12 @@ function getSupportedMimeType(): string {
   throw new Error('No supported audio format found in this browser.')
 }
 
-function getMediaStream(): Promise<MediaStream> {
+function getMediaStream(deviceId?: string): Promise<MediaStream> {
+  const constraints: MediaStreamConstraints = {
+    audio: deviceId ? { deviceId: { exact: deviceId } } : true,
+  }
   if (navigator.mediaDevices?.getUserMedia) {
-    return navigator.mediaDevices.getUserMedia({ audio: true })
+    return navigator.mediaDevices.getUserMedia(constraints)
   }
   const legacyGetUserMedia =
     (navigator as any).getUserMedia ||
@@ -31,13 +35,20 @@ function getMediaStream(): Promise<MediaStream> {
     (navigator as any).mozGetUserMedia
   if (legacyGetUserMedia) {
     return new Promise((resolve, reject) => {
-      legacyGetUserMedia.call(navigator, { audio: true }, resolve, reject)
+      legacyGetUserMedia.call(navigator, constraints, resolve, reject)
     })
   }
   throw new Error('Microphone access is not available in this browser.')
 }
 
-export function createAudioRecorder(): AudioRecorderService {
+export async function listAudioInputDevices(): Promise<{ deviceId: string; label: string }[]> {
+  const devices = await navigator.mediaDevices.enumerateDevices()
+  return devices
+    .filter(d => d.kind === 'audioinput')
+    .map(d => ({ deviceId: d.deviceId, label: d.label || d.deviceId }))
+}
+
+export function createAudioRecorder(opts?: { deviceId?: string }): AudioRecorderService {
   let state: RecordingState = 'idle'
   let mediaRecorder: MediaRecorder | null = null
   let chunks: Blob[] = []
@@ -51,9 +62,27 @@ export function createAudioRecorder(): AudioRecorderService {
   }
 
   const service: AudioRecorderService = {
+    usedFallback: false,
+
     async start() {
       const mimeType = getSupportedMimeType()
-      const stream = await getMediaStream()
+      let stream: MediaStream
+      const deviceId = opts?.deviceId
+      if (deviceId) {
+        try {
+          stream = await getMediaStream(deviceId)
+        } catch (err) {
+          const name = err instanceof Error ? err.name : ''
+          if (name === 'OverconstrainedError' || name === 'NotFoundError') {
+            service.usedFallback = true
+            stream = await getMediaStream()
+          } else {
+            throw err
+          }
+        }
+      } else {
+        stream = await getMediaStream()
+      }
       chunks = []
       mediaRecorder = new MediaRecorder(stream, { mimeType })
       mediaRecorder.ondataavailable = (e) => {
