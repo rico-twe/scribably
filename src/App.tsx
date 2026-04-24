@@ -25,7 +25,7 @@ interface AppProps {
 
 export default function App({ theme, onThemeToggle }: AppProps) {
   const { config, updateConfig } = useConfig()
-  const { state: recState, duration, audioBlob, error: recError, startRecording, stopRecording } = useAudioRecorder()
+  const { state: recState, duration, audioBlob, error: recError, level, isClipping, isSilent, startRecording, stopRecording } = useAudioRecorder()
   const { state: txState, result: txResult, error: txError, transcribe } = useTranscription()
   const { state: tpState, cleanState, promptState, cleanedText, setCleanedText, promptText, error: tpError, process } = useTextProcessing()
   const { entries: historyEntries, addEntry, updateLatest, selectedEntry, selectEntry, clearHistory } = useHistory()
@@ -204,6 +204,9 @@ export default function App({ theme, onThemeToggle }: AppProps) {
               onStartRecording={handleStartRecording}
               onStopRecording={stopRecording}
               onFileUpload={handleFileUpload}
+              level={level}
+              isClipping={isClipping}
+              isSilent={isSilent}
             />
           </section>
 
