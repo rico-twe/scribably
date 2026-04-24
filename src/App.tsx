@@ -32,8 +32,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   const lastSavedTxRef = useRef<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(() => !isConfigured(config))
   const [showLatex, setShowLatex] = useState(false)
-  const [lastAudio, setLastAudio] = useState<Blob | null>(null)
-  const [txDetectedLanguage, setTxDetectedLanguage] = useState<string | null>(null)
+  const lastAudioRef = useRef<Blob | null>(null)
 
   const processingEnabled = config.enableCleaning || config.enablePrompt
 
@@ -50,18 +49,10 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   useEffect(() => {
     if (audioBlob && config.sttProvider) {
       console.log('[WP:app] Audio blob ready, triggering transcription')
-      setLastAudio(audioBlob)
+      lastAudioRef.current = audioBlob
       transcribe(audioBlob, config.sttProvider.providerId, config.language)
     }
   }, [audioBlob])
-
-  useEffect(() => {
-    if (txState === 'done' && txResult) {
-      if (txResult.language) {
-        setTxDetectedLanguage(normalizeLanguage(txResult.language) ?? txResult.language)
-      }
-    }
-  }, [txState, txResult])
 
   useEffect(() => {
     if (txState === 'done' && txResult?.text) {
@@ -129,16 +120,17 @@ export default function App({ theme, onThemeToggle }: AppProps) {
     if (config.sttProvider) {
       selectEntry(null)
       console.log('[WP:app] File upload, triggering transcription | name:', file.name, '| size:', file.size)
-      setLastAudio(file)
+      lastAudioRef.current = file
       transcribe(file, config.sttProvider.providerId, config.language)
     }
   }, [config, transcribe, selectEntry])
 
   const handleReTranscribe = useCallback((code: string) => {
-    if (!lastAudio || !config.sttProvider) return
+    const blob = lastAudioRef.current
+    if (!blob || !config.sttProvider) return
     recordCorrection(code)
-    transcribe(lastAudio, config.sttProvider.providerId, code)
-  }, [lastAudio, config, transcribe])
+    transcribe(blob, config.sttProvider.providerId, code)
+  }, [config, transcribe])
 
   const handleStartRecording = useCallback(() => {
     selectEntry(null)
@@ -164,6 +156,11 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   const exportText = displayPromptText || displayCleanedText || displayRawText || ''
   const latexText = useMemo(() => exportText ? markdownToLatex(exportText) : null, [exportText])
   const hasResult = !!(displayRawText)
+
+  const txDetectedLanguage = useMemo(() => {
+    if (txState !== 'done' || !txResult?.language) return null
+    return normalizeLanguage(txResult.language) ?? txResult.language
+  }, [txState, txResult])
 
   const suggestedDefault = useMemo(() => {
     if (!txDetectedLanguage) return null
