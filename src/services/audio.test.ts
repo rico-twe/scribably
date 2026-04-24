@@ -36,12 +36,10 @@ class MockAudioContext {
 }
 
 beforeAll(() => {
-<<<<<<< feat/12_live-input-meter
-  (globalThis as any).MediaRecorder = MockMediaRecorder
-  ;(globalThis as any).AudioContext = MockAudioContext
-=======
-  Object.assign(globalThis, { MediaRecorder: MockMediaRecorder })
->>>>>>> main
+  Object.assign(globalThis, {
+    MediaRecorder: MockMediaRecorder,
+    AudioContext: MockAudioContext,
+  })
   Object.defineProperty(globalThis.navigator, 'mediaDevices', {
     value: {
       getUserMedia: vi.fn().mockResolvedValue({
