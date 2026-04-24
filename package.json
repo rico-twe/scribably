@@ -29,6 +29,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "docx": "^9.6.1",
     "html5-qrcode": "^2.3.8",
     "marked": "^18.0.0",
     "qrcode.react": "^4.2.0",

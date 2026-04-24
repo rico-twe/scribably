@@ -27,6 +27,13 @@ export function createOpenAIWhisperProvider(apiKey: string): TranscriptionProvid
         text: data.text,
         language: data.language ?? options.language,
         duration: data.duration ?? 0,
+        segments: Array.isArray(data.segments)
+          ? data.segments.map((s: { start: number; end: number; text: string }) => ({
+              start: s.start,
+              end: s.end,
+              text: s.text,
+            }))
+          : undefined,
       }
     },
   }
