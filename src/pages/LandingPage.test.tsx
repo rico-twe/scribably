@@ -8,7 +8,7 @@ describe('LandingPage', () => {
 
   it('renders the hero headline and primary CTA', () => {
     render(<LandingPage theme="cream" onThemeToggle={() => {}} />)
-    expect(screen.getByText('Speech.')).toBeInTheDocument()
+    expect(screen.getByText('Speech')).toBeInTheDocument()
     expect(screen.getByText('Prompt.')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /record now/i })).toBeInTheDocument()
   })
