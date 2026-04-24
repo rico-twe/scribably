@@ -36,7 +36,7 @@ function processInlineText(raw: string): string {
     } else if (full.startsWith('`')) {
       parts.push(`\\texttt{${escapeLatex(match[4])}}`)
     } else if (full.startsWith('[')) {
-      parts.push(`\\href{${match[6]}}{${escapeLatex(match[5])}}`)
+      parts.push(`\\href{${escapeLatex(match[6])}}{${escapeLatex(match[5])}}`)
     }
 
     lastIndex = match.index + full.length

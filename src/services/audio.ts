@@ -6,6 +6,7 @@ export interface AudioRecorderService {
   getState(): RecordingState;
   getDuration(): number;
   onStateChange(callback: (state: RecordingState) => void): () => void;
+  getAnalyser(): AnalyserNode | null;
 }
 
 const MAX_DURATION_MS = 5 * 60 * 1000
@@ -47,6 +48,8 @@ function getMediaStream(): Promise<MediaStream> {
 export function createAudioRecorder(): AudioRecorderService {
   let state: RecordingState = 'idle'
   let mediaRecorder: MediaRecorder | null = null
+  let audioContext: AudioContext | null = null
+  let analyser: AnalyserNode | null = null
   let chunks: Blob[] = []
   let startTime = 0
   let timeout: ReturnType<typeof setTimeout> | null = null
@@ -61,6 +64,13 @@ export function createAudioRecorder(): AudioRecorderService {
     async start() {
       const mimeType = getSupportedMimeType()
       const stream = await getMediaStream()
+
+      audioContext = new AudioContext()
+      analyser = audioContext.createAnalyser()
+      analyser.fftSize = 2048
+      analyser.smoothingTimeConstant = 0.3
+      audioContext.createMediaStreamSource(stream).connect(analyser)
+
       chunks = []
       mediaRecorder = new MediaRecorder(stream, { mimeType })
       mediaRecorder.ondataavailable = (e) => {
@@ -83,6 +93,9 @@ export function createAudioRecorder(): AudioRecorderService {
         mediaRecorder.onstop = () => {
           const blob = new Blob(chunks, { type: mediaRecorder!.mimeType })
           mediaRecorder!.stream.getTracks().forEach(t => t.stop())
+          audioContext?.close()
+          audioContext = null
+          analyser = null
           setState('idle')
           resolve(blob)
         }
@@ -96,6 +109,7 @@ export function createAudioRecorder(): AudioRecorderService {
       listeners.add(callback)
       return () => listeners.delete(callback)
     },
+    getAnalyser() { return analyser },
   }
 
   return service
