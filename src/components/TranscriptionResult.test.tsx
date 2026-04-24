@@ -3,6 +3,13 @@ import userEvent from '@testing-library/user-event'
 import { TranscriptionResult } from './TranscriptionResult'
 import { EXAMPLE_SEGMENTS } from '../export/__fixtures__/example-transcript'
 
+const AVAILABLE_LANGUAGES = [
+  { code: 'de', name: 'German' },
+  { code: 'en', name: 'English' },
+  { code: 'fr', name: 'Français' },
+  { code: 'es', name: 'Español' },
+]
+
 describe('TranscriptionResult', () => {
   it('renders only raw tab by default', () => {
     render(<TranscriptionResult rawText="raw" cleanedText={null} promptText={null} isProcessing={false} />)
@@ -96,5 +103,43 @@ describe('TranscriptionResult', () => {
     )
     expect(screen.getByText('Hallo und willkommen.').className).toContain('bg-lemon-300/30')
     expect(screen.getByText('Das ist ein Testsatz.').className).not.toContain('bg-lemon-300/30')
+  })
+
+  it('renders language badge with name when detectedLanguage is set', () => {
+    render(
+      <TranscriptionResult
+        rawText="test"
+        cleanedText={null}
+        promptText={null}
+        isProcessing={false}
+        detectedLanguage="de"
+        availableLanguages={AVAILABLE_LANGUAGES}
+      />
+    )
+    expect(screen.getByText('German')).toBeInTheDocument()
+  })
+
+  it('does not render language badge when detectedLanguage is absent', () => {
+    render(<TranscriptionResult rawText="test" cleanedText={null} promptText={null} isProcessing={false} />)
+    expect(screen.queryByText('German')).not.toBeInTheDocument()
+    expect(screen.queryByText('Fix language')).not.toBeInTheDocument()
+  })
+
+  it('calls onLanguageCorrection with selected code', async () => {
+    const onCorrection = vi.fn()
+    render(
+      <TranscriptionResult
+        rawText="test"
+        cleanedText={null}
+        promptText={null}
+        isProcessing={false}
+        detectedLanguage="de"
+        availableLanguages={AVAILABLE_LANGUAGES}
+        onLanguageCorrection={onCorrection}
+      />
+    )
+    const select = screen.getByRole('combobox', { name: /correct detected language/i })
+    await userEvent.selectOptions(select, 'fr')
+    expect(onCorrection).toHaveBeenCalledWith('fr')
   })
 })
