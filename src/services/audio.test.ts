@@ -8,8 +8,8 @@ class MockMediaRecorder {
   mimeType = 'audio/webm'
   stream: { getTracks: () => { stop: () => void }[] }
 
-  constructor(stream: MediaStream) {
-    this.stream = stream as any
+  constructor(stream: { getTracks: () => { stop: () => void }[] }) {
+    this.stream = stream
   }
   start() { this.state = 'recording' }
   stop() {
@@ -21,7 +21,7 @@ class MockMediaRecorder {
 }
 
 beforeAll(() => {
-  (globalThis as any).MediaRecorder = MockMediaRecorder
+  Object.assign(globalThis, { MediaRecorder: MockMediaRecorder })
   Object.defineProperty(globalThis.navigator, 'mediaDevices', {
     value: {
       getUserMedia: vi.fn().mockResolvedValue({

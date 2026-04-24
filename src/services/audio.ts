@@ -25,10 +25,17 @@ function getMediaStream(): Promise<MediaStream> {
   if (navigator.mediaDevices?.getUserMedia) {
     return navigator.mediaDevices.getUserMedia({ audio: true })
   }
-  const legacyGetUserMedia =
-    (navigator as any).getUserMedia ||
-    (navigator as any).webkitGetUserMedia ||
-    (navigator as any).mozGetUserMedia
+  type LegacyGetUserMedia = (
+    constraints: MediaStreamConstraints,
+    successCallback: (stream: MediaStream) => void,
+    errorCallback: (err: DOMException) => void
+  ) => void
+  const nav = navigator as Navigator & {
+    getUserMedia?: LegacyGetUserMedia
+    webkitGetUserMedia?: LegacyGetUserMedia
+    mozGetUserMedia?: LegacyGetUserMedia
+  }
+  const legacyGetUserMedia = nav.getUserMedia || nav.webkitGetUserMedia || nav.mozGetUserMedia
   if (legacyGetUserMedia) {
     return new Promise((resolve, reject) => {
       legacyGetUserMedia.call(navigator, { audio: true }, resolve, reject)
