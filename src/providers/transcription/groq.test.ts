@@ -29,6 +29,41 @@ describe('Groq Transcription Provider', () => {
     expect(call[1].headers.Authorization).toBe('Bearer gsk_test')
   })
 
+  it('maps segments from verbose_json response', async () => {
+    (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        text: 'Hallo Welt',
+        language: 'de',
+        duration: 3.5,
+        segments: [
+          { start: 0, end: 1.5, text: 'Hallo', extra: 'ignored' },
+          { start: 1.5, end: 3.5, text: 'Welt', extra: 'ignored' },
+        ],
+      }),
+    })
+
+    const provider = createGroqProvider('gsk_test')
+    const result = await provider.transcribe(new Blob(['audio']), { language: 'de' })
+
+    expect(result.segments).toEqual([
+      { start: 0, end: 1.5, text: 'Hallo' },
+      { start: 1.5, end: 3.5, text: 'Welt' },
+    ])
+  })
+
+  it('returns undefined segments when not present in response', async () => {
+    (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: async () => ({ text: 'Hallo Welt', language: 'de', duration: 3.5 }),
+    })
+
+    const provider = createGroqProvider('gsk_test')
+    const result = await provider.transcribe(new Blob(['audio']), { language: 'de' })
+
+    expect(result.segments).toBeUndefined()
+  })
+
   it('uses whisper-large-v3 model by default', async () => {
     (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: true,

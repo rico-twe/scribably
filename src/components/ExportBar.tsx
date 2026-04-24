@@ -1,4 +1,8 @@
 import { useState } from 'react'
+import type { Segment } from '../providers/transcription/types'
+import { segmentsToSrt } from '../export/srt'
+import { segmentsToVtt } from '../export/vtt'
+import { textToDocx } from '../export/docx'
 
 interface ExportBarProps {
   text: string;
@@ -6,10 +10,11 @@ interface ExportBarProps {
   disabled: boolean;
   showLatex: boolean;
   onToggleLatex: () => void;
+  segments?: Segment[];
 }
 
-function downloadFile(content: string, filename: string, mimeType: string) {
-  const blob = new Blob([content], { type: mimeType })
+function downloadFile(content: string | Blob, filename: string, mimeType: string) {
+  const blob = content instanceof Blob ? content : new Blob([content], { type: mimeType })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
@@ -18,7 +23,15 @@ function downloadFile(content: string, filename: string, mimeType: string) {
   URL.revokeObjectURL(url)
 }
 
-export function ExportBar({ text, latexText, disabled, showLatex, onToggleLatex }: ExportBarProps) {
+const downloadIcon = (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="7 10 12 15 17 10" />
+    <line x1="12" x2="12" y1="15" y2="3" />
+  </svg>
+)
+
+export function ExportBar({ text, latexText, disabled, showLatex, onToggleLatex, segments }: ExportBarProps) {
   const [copied, setCopied] = useState(false)
 
   const activeText = showLatex && latexText ? latexText : text
@@ -29,6 +42,11 @@ export function ExportBar({ text, latexText, disabled, showLatex, onToggleLatex 
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const handleDocxDownload = async () => {
+    const blob = await textToDocx(text, segments)
+    downloadFile(blob, 'transcript.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+  }
+
   const btnClass = `
     flex items-center gap-1.5 px-3 py-1.5 rounded-[12px] text-xs font-clay-ui transition-all
     bg-bg-card text-text-secondary border border-border-oat shadow-clay
@@ -37,7 +55,7 @@ export function ExportBar({ text, latexText, disabled, showLatex, onToggleLatex 
   `
 
   return (
-    <div className="flex gap-1.5 mt-3">
+    <div className="flex flex-wrap gap-1.5 mt-3">
       <button onClick={handleCopy} disabled={disabled} data-umami-event="export-copy" className={`${btnClass} hover:bg-slushie-500/10`}>
         {copied ? (
           <>
@@ -81,11 +99,7 @@ export function ExportBar({ text, latexText, disabled, showLatex, onToggleLatex 
           data-umami-event="export-tex"
           className={`${btnClass} hover:bg-ube-300/10`}
         >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" x2="12" y1="15" y2="3" />
-          </svg>
+          {downloadIcon}
           .tex
         </button>
       ) : (
@@ -96,11 +110,7 @@ export function ExportBar({ text, latexText, disabled, showLatex, onToggleLatex 
             data-umami-event="export-md"
             className={`${btnClass} hover:bg-matcha-300/10`}
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" x2="12" y1="15" y2="3" />
-            </svg>
+            {downloadIcon}
             .md
           </button>
           <button
@@ -109,15 +119,41 @@ export function ExportBar({ text, latexText, disabled, showLatex, onToggleLatex 
             data-umami-event="export-txt"
             className={`${btnClass} hover:bg-lemon-400/10`}
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" x2="12" y1="15" y2="3" />
-            </svg>
+            {downloadIcon}
             .txt
           </button>
         </>
       )}
+
+      <button
+        onClick={() => downloadFile(segmentsToSrt(segments!), 'transcript.srt', 'text/srt')}
+        disabled={disabled || !segments}
+        data-umami-event="export-srt"
+        className={`${btnClass} hover:bg-matcha-400/10`}
+      >
+        {downloadIcon}
+        .srt
+      </button>
+
+      <button
+        onClick={() => downloadFile(segmentsToVtt(segments!), 'transcript.vtt', 'text/vtt')}
+        disabled={disabled || !segments}
+        data-umami-event="export-vtt"
+        className={`${btnClass} hover:bg-slushie-400/10`}
+      >
+        {downloadIcon}
+        .vtt
+      </button>
+
+      <button
+        onClick={handleDocxDownload}
+        disabled={disabled}
+        data-umami-event="export-docx"
+        className={`${btnClass} hover:bg-ube-400/10`}
+      >
+        {downloadIcon}
+        .docx
+      </button>
     </div>
   )
 }

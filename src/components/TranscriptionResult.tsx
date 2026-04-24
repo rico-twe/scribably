@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import type { Segment } from '../providers/transcription/types'
 import { getLanguageName } from '../services/languages'
 
 type Tab = 'raw' | 'clean' | 'prompt'
@@ -17,6 +18,9 @@ interface TranscriptionResultProps {
   onCleanedTextChange?: (text: string) => void;
   latexText?: string | null;
   showLatex?: boolean;
+  segments?: Segment[];
+  currentTime?: number;
+  onSeek?: (t: number) => void;
   detectedLanguage?: string;
   availableLanguages?: { code: string; name: string }[];
   onLanguageCorrection?: (code: string) => void;
@@ -36,6 +40,7 @@ export function TranscriptionResult({
   isCleanProcessing = false, isPromptProcessing = false,
   onClean, onPrompt, onCleanedTextChange,
   latexText, showLatex = false,
+  segments, currentTime, onSeek,
   detectedLanguage, availableLanguages, onLanguageCorrection,
   suggestedDefault, onAcceptDefault,
 }: TranscriptionResultProps) {
@@ -141,6 +146,21 @@ export function TranscriptionResult({
             onChange={e => onCleanedTextChange(e.target.value)}
             className="w-full h-full bg-transparent p-5 text-text-secondary resize-none outline-none whitespace-pre-wrap text-[13px] leading-[1.7]"
           />
+        ) : effectiveTab === 'raw' && segments && segments.length > 0 ? (
+          <p className="p-5 whitespace-pre-wrap text-text-secondary text-[13px] leading-[1.7]">
+            {segments.map((seg, i) => {
+              const active = currentTime != null && currentTime >= seg.start && currentTime < seg.end
+              return (
+                <span
+                  key={i}
+                  onClick={() => onSeek?.(seg.start)}
+                  className={`cursor-pointer rounded px-0.5 transition-colors hover:underline ${active ? 'bg-lemon-300/30' : ''}`}
+                >
+                  {seg.text}
+                </span>
+              )
+            })}
+          </p>
         ) : currentText ? (
           <p className="p-5 whitespace-pre-wrap text-text-secondary text-[13px] leading-[1.7]">{currentText}</p>
         ) : (

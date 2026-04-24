@@ -10,6 +10,7 @@ import { markdownToLatex } from './services/markdown-to-latex'
 import { normalizeLanguage, SUPPORTED_LANGUAGES } from './services/languages'
 import { recordCorrection, getTopCorrection } from './services/language-feedback'
 import { AudioRecorder } from './components/AudioRecorder'
+import { AudioPlayer } from './components/AudioPlayer'
 import { TranscriptionResult } from './components/TranscriptionResult'
 import { ExportBar } from './components/ExportBar'
 import { HistoryList } from './components/HistoryList'
@@ -32,7 +33,24 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   const lastSavedTxRef = useRef<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(() => !isConfigured(config))
   const [showLatex, setShowLatex] = useState(false)
+  const [uploadedFile, setUploadedFile] = useState<Blob | null>(null)
+  const [currentTime, setCurrentTime] = useState(0)
+  const audioRef = useRef<HTMLAudioElement>(null)
   const lastAudioRef = useRef<Blob | null>(null)
+
+  const activePlayerBlob = audioBlob ?? uploadedFile
+  const audioUrl = useMemo(
+    () => (activePlayerBlob ? URL.createObjectURL(activePlayerBlob) : null),
+    [activePlayerBlob],
+  )
+  useEffect(() => () => { if (audioUrl) URL.revokeObjectURL(audioUrl) }, [audioUrl])
+
+  const seekTo = useCallback((t: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = t
+      audioRef.current.play()
+    }
+  }, [])
 
   const processingEnabled = config.enableCleaning || config.enablePrompt
 
@@ -119,6 +137,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   const handleFileUpload = useCallback((file: File) => {
     if (config.sttProvider) {
       selectEntry(null)
+      setUploadedFile(file)
       console.log('[WP:app] File upload, triggering transcription | name:', file.name, '| size:', file.size)
       lastAudioRef.current = file
       transcribe(file, config.sttProvider.providerId, config.language)
@@ -156,6 +175,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   const exportText = displayPromptText || displayCleanedText || displayRawText || ''
   const latexText = useMemo(() => exportText ? markdownToLatex(exportText) : null, [exportText])
   const hasResult = !!(displayRawText)
+  const segments = isViewingHistory ? undefined : txResult?.segments
 
   const txDetectedLanguage = useMemo(() => {
     if (txState !== 'done' || !txResult?.language) return null
@@ -254,6 +274,13 @@ export default function App({ theme, onThemeToggle }: AppProps) {
               </span>
             )}
           </div>
+          {audioUrl && hasResult && !isViewingHistory && (
+            <AudioPlayer
+              src={audioUrl}
+              audioRef={audioRef}
+              onTimeUpdate={setCurrentTime}
+            />
+          )}
           <TranscriptionResult
             rawText={displayRawText}
             cleanedText={displayCleanedText}
@@ -268,6 +295,9 @@ export default function App({ theme, onThemeToggle }: AppProps) {
             onCleanedTextChange={!isViewingHistory ? setCleanedText : undefined}
             showLatex={showLatex}
             latexText={latexText}
+            segments={segments}
+            currentTime={currentTime}
+            onSeek={seekTo}
             detectedLanguage={!isViewingHistory ? txDetectedLanguage ?? undefined : undefined}
             availableLanguages={[...SUPPORTED_LANGUAGES]}
             onLanguageCorrection={!isViewingHistory ? handleReTranscribe : undefined}
@@ -280,6 +310,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
             disabled={!displayRawText}
             showLatex={showLatex}
             onToggleLatex={() => setShowLatex(prev => !prev)}
+            segments={segments}
           />
         </div>
 
