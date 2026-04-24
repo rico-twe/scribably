@@ -8,8 +8,6 @@ vi.mock('../services/audio', () => ({
     { deviceId: 'mic-1', label: 'Built-in Mic' },
     { deviceId: 'mic-2', label: 'USB Mic' },
   ]),
-  testSTTConnection: vi.fn(),
-  testLLMConnection: vi.fn(),
 }))
 
 vi.mock('../services/connection-test', () => ({

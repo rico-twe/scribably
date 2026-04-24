@@ -7,6 +7,7 @@ export interface AudioRecorderService {
   getDuration(): number;
   onStateChange(callback: (state: RecordingState) => void): () => void;
   usedFallback: boolean;
+  getAnalyser(): AnalyserNode | null;
 }
 
 const MAX_DURATION_MS = 5 * 60 * 1000
@@ -29,10 +30,17 @@ function getMediaStream(deviceId?: string): Promise<MediaStream> {
   if (navigator.mediaDevices?.getUserMedia) {
     return navigator.mediaDevices.getUserMedia(constraints)
   }
-  const legacyGetUserMedia =
-    (navigator as any).getUserMedia ||
-    (navigator as any).webkitGetUserMedia ||
-    (navigator as any).mozGetUserMedia
+  type LegacyGetUserMedia = (
+    constraints: MediaStreamConstraints,
+    successCallback: (stream: MediaStream) => void,
+    errorCallback: (err: DOMException) => void
+  ) => void
+  const nav = navigator as Navigator & {
+    getUserMedia?: LegacyGetUserMedia
+    webkitGetUserMedia?: LegacyGetUserMedia
+    mozGetUserMedia?: LegacyGetUserMedia
+  }
+  const legacyGetUserMedia = nav.getUserMedia || nav.webkitGetUserMedia || nav.mozGetUserMedia
   if (legacyGetUserMedia) {
     return new Promise((resolve, reject) => {
       legacyGetUserMedia.call(navigator, constraints, resolve, reject)
@@ -42,7 +50,7 @@ function getMediaStream(deviceId?: string): Promise<MediaStream> {
 }
 
 export async function listAudioInputDevices(): Promise<{ deviceId: string; label: string }[]> {
-  const devices = await navigator.mediaDevices.enumerateDevices()
+  const devices = await (navigator.mediaDevices?.enumerateDevices() ?? Promise.resolve([]))
   return devices
     .filter(d => d.kind === 'audioinput')
     .map(d => ({ deviceId: d.deviceId, label: d.label || d.deviceId }))
@@ -51,6 +59,8 @@ export async function listAudioInputDevices(): Promise<{ deviceId: string; label
 export function createAudioRecorder(opts?: { deviceId?: string }): AudioRecorderService {
   let state: RecordingState = 'idle'
   let mediaRecorder: MediaRecorder | null = null
+  let audioContext: AudioContext | null = null
+  let analyser: AnalyserNode | null = null
   let chunks: Blob[] = []
   let startTime = 0
   let timeout: ReturnType<typeof setTimeout> | null = null
@@ -66,6 +76,7 @@ export function createAudioRecorder(opts?: { deviceId?: string }): AudioRecorder
 
     async start() {
       const mimeType = getSupportedMimeType()
+      service.usedFallback = false
       let stream: MediaStream
       const deviceId = opts?.deviceId
       if (deviceId) {
@@ -83,6 +94,13 @@ export function createAudioRecorder(opts?: { deviceId?: string }): AudioRecorder
       } else {
         stream = await getMediaStream()
       }
+
+      audioContext = new AudioContext()
+      analyser = audioContext.createAnalyser()
+      analyser.fftSize = 2048
+      analyser.smoothingTimeConstant = 0.3
+      audioContext.createMediaStreamSource(stream).connect(analyser)
+
       chunks = []
       mediaRecorder = new MediaRecorder(stream, { mimeType })
       mediaRecorder.ondataavailable = (e) => {
@@ -105,6 +123,9 @@ export function createAudioRecorder(opts?: { deviceId?: string }): AudioRecorder
         mediaRecorder.onstop = () => {
           const blob = new Blob(chunks, { type: mediaRecorder!.mimeType })
           mediaRecorder!.stream.getTracks().forEach(t => t.stop())
+          audioContext?.close()
+          audioContext = null
+          analyser = null
           setState('idle')
           resolve(blob)
         }
@@ -118,6 +139,7 @@ export function createAudioRecorder(opts?: { deviceId?: string }): AudioRecorder
       listeners.add(callback)
       return () => listeners.delete(callback)
     },
+    getAnalyser() { return analyser },
   }
 
   return service

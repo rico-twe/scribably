@@ -7,7 +7,10 @@ import { useHistory } from './hooks/useHistory'
 import { initializeProviders } from './providers/init'
 import { isConfigured } from './services/config'
 import { markdownToLatex } from './services/markdown-to-latex'
+import { normalizeLanguage, SUPPORTED_LANGUAGES } from './services/languages'
+import { recordCorrection, getTopCorrection } from './services/language-feedback'
 import { AudioRecorder } from './components/AudioRecorder'
+import { AudioPlayer } from './components/AudioPlayer'
 import { TranscriptionResult } from './components/TranscriptionResult'
 import { ExportBar } from './components/ExportBar'
 import { HistoryList } from './components/HistoryList'
@@ -23,13 +26,31 @@ interface AppProps {
 
 export default function App({ theme, onThemeToggle }: AppProps) {
   const { config, updateConfig } = useConfig()
-  const { state: recState, duration, audioBlob, error: recError, warning: recWarning, startRecording, stopRecording } = useAudioRecorder(config.audioDeviceId ?? undefined)
+  const { state: recState, duration, audioBlob, error: recError, warning: recWarning, level, isClipping, isSilent, startRecording, stopRecording } = useAudioRecorder(config.audioDeviceId ?? undefined)
   const { state: txState, result: txResult, error: txError, transcribe } = useTranscription()
   const { state: tpState, cleanState, promptState, cleanedText, setCleanedText, promptText, error: tpError, process } = useTextProcessing()
   const { entries: historyEntries, addEntry, updateLatest, selectedEntry, selectEntry, clearHistory } = useHistory()
   const lastSavedTxRef = useRef<string | null>(null)
-  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(() => !isConfigured(config))
   const [showLatex, setShowLatex] = useState(false)
+  const [uploadedFile, setUploadedFile] = useState<Blob | null>(null)
+  const [currentTime, setCurrentTime] = useState(0)
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const lastAudioRef = useRef<Blob | null>(null)
+
+  const activePlayerBlob = audioBlob ?? uploadedFile
+  const audioUrl = useMemo(
+    () => (activePlayerBlob ? URL.createObjectURL(activePlayerBlob) : null),
+    [activePlayerBlob],
+  )
+  useEffect(() => () => { if (audioUrl) URL.revokeObjectURL(audioUrl) }, [audioUrl])
+
+  const seekTo = useCallback((t: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = t
+      audioRef.current.play()
+    }
+  }, [])
 
   const processingEnabled = config.enableCleaning || config.enablePrompt
 
@@ -44,12 +65,9 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   }, [config])
 
   useEffect(() => {
-    if (!isConfigured(config)) setSettingsOpen(true)
-  }, [])
-
-  useEffect(() => {
     if (audioBlob && config.sttProvider) {
       console.log('[WP:app] Audio blob ready, triggering transcription')
+      lastAudioRef.current = audioBlob
       transcribe(audioBlob, config.sttProvider.providerId, config.language)
     }
   }, [audioBlob])
@@ -119,10 +137,19 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   const handleFileUpload = useCallback((file: File) => {
     if (config.sttProvider) {
       selectEntry(null)
+      setUploadedFile(file)
       console.log('[WP:app] File upload, triggering transcription | name:', file.name, '| size:', file.size)
+      lastAudioRef.current = file
       transcribe(file, config.sttProvider.providerId, config.language)
     }
   }, [config, transcribe, selectEntry])
+
+  const handleReTranscribe = useCallback((code: string) => {
+    const blob = lastAudioRef.current
+    if (!blob || !config.sttProvider) return
+    recordCorrection(code)
+    transcribe(blob, config.sttProvider.providerId, code)
+  }, [config, transcribe])
 
   const handleStartRecording = useCallback(() => {
     selectEntry(null)
@@ -148,6 +175,19 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   const exportText = displayPromptText || displayCleanedText || displayRawText || ''
   const latexText = useMemo(() => exportText ? markdownToLatex(exportText) : null, [exportText])
   const hasResult = !!(displayRawText)
+  const segments = isViewingHistory ? undefined : txResult?.segments
+
+  const txDetectedLanguage = useMemo(() => {
+    if (txState !== 'done' || !txResult?.language) return null
+    return normalizeLanguage(txResult.language) ?? txResult.language
+  }, [txState, txResult])
+
+  const suggestedDefault = useMemo(() => {
+    if (!txDetectedLanguage) return null
+    const top = getTopCorrection()
+    if (!top || top === config.language) return null
+    return top
+  }, [txDetectedLanguage, config.language])
 
   const settingsButton = (
     <button
@@ -184,6 +224,9 @@ export default function App({ theme, onThemeToggle }: AppProps) {
               onStartRecording={handleStartRecording}
               onStopRecording={stopRecording}
               onFileUpload={handleFileUpload}
+              level={level}
+              isClipping={isClipping}
+              isSilent={isSilent}
             />
           </section>
 
@@ -240,6 +283,13 @@ export default function App({ theme, onThemeToggle }: AppProps) {
               </span>
             )}
           </div>
+          {audioUrl && hasResult && !isViewingHistory && (
+            <AudioPlayer
+              src={audioUrl}
+              audioRef={audioRef}
+              onTimeUpdate={setCurrentTime}
+            />
+          )}
           <TranscriptionResult
             rawText={displayRawText}
             cleanedText={displayCleanedText}
@@ -254,6 +304,14 @@ export default function App({ theme, onThemeToggle }: AppProps) {
             onCleanedTextChange={!isViewingHistory ? setCleanedText : undefined}
             showLatex={showLatex}
             latexText={latexText}
+            segments={segments}
+            currentTime={currentTime}
+            onSeek={seekTo}
+            detectedLanguage={!isViewingHistory ? txDetectedLanguage ?? undefined : undefined}
+            availableLanguages={[...SUPPORTED_LANGUAGES]}
+            onLanguageCorrection={!isViewingHistory ? handleReTranscribe : undefined}
+            suggestedDefault={!isViewingHistory ? suggestedDefault : undefined}
+            onAcceptDefault={!isViewingHistory ? (code) => updateConfig({ language: code }) : undefined}
           />
           <ExportBar
             text={exportText}
@@ -261,6 +319,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
             disabled={!displayRawText}
             showLatex={showLatex}
             onToggleLatex={() => setShowLatex(prev => !prev)}
+            segments={segments}
           />
         </div>
 

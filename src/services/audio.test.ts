@@ -8,8 +8,8 @@ class MockMediaRecorder {
   mimeType = 'audio/webm'
   stream: { getTracks: () => { stop: () => void }[] }
 
-  constructor(stream: MediaStream) {
-    this.stream = stream as any
+  constructor(stream: { getTracks: () => { stop: () => void }[] }) {
+    this.stream = stream
   }
   start() { this.state = 'recording' }
   stop() {
@@ -24,8 +24,26 @@ const mockGetUserMedia = vi.fn().mockResolvedValue({
   getTracks: () => [{ stop: vi.fn() }],
 })
 
+const mockClose = vi.fn().mockResolvedValue(undefined)
+const mockConnectAnalyser = vi.fn()
+const mockGetByteTimeDomainData = vi.fn()
+const mockAnalyser = {
+  fftSize: 0 as number,
+  smoothingTimeConstant: 0 as number,
+  getByteTimeDomainData: mockGetByteTimeDomainData,
+}
+
+class MockAudioContext {
+  createAnalyser() { return mockAnalyser }
+  createMediaStreamSource() { return { connect: mockConnectAnalyser } }
+  close = mockClose
+}
+
 beforeAll(() => {
-  (globalThis as any).MediaRecorder = MockMediaRecorder
+  Object.assign(globalThis, {
+    MediaRecorder: MockMediaRecorder,
+    AudioContext: MockAudioContext,
+  })
   Object.defineProperty(globalThis.navigator, 'mediaDevices', {
     value: {
       getUserMedia: mockGetUserMedia,
@@ -78,6 +96,36 @@ describe('AudioRecorderService', () => {
   it('rejects stop when not recording', async () => {
     const recorder = createAudioRecorder()
     await expect(recorder.stop()).rejects.toThrow('No active recording')
+  })
+})
+
+describe('AnalyserNode integration', () => {
+  beforeEach(() => { vi.clearAllMocks() })
+
+  it('getAnalyser returns null before start', () => {
+    const recorder = createAudioRecorder()
+    expect(recorder.getAnalyser()).toBeNull()
+  })
+
+  it('creates AudioContext and AnalyserNode on start', async () => {
+    const recorder = createAudioRecorder()
+    await recorder.start()
+    expect(recorder.getAnalyser()).toBe(mockAnalyser)
+    await recorder.stop()
+  })
+
+  it('closes AudioContext on stop', async () => {
+    const recorder = createAudioRecorder()
+    await recorder.start()
+    await recorder.stop()
+    expect(mockClose).toHaveBeenCalledOnce()
+  })
+
+  it('getAnalyser returns null after stop', async () => {
+    const recorder = createAudioRecorder()
+    await recorder.start()
+    await recorder.stop()
+    expect(recorder.getAnalyser()).toBeNull()
   })
 })
 
