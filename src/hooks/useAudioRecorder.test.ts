@@ -9,8 +9,8 @@ const mockCreateAudioRecorder = vi.fn()
 const mockGetDuration = vi.fn().mockReturnValue(0)
 
 vi.mock('../services/audio', () => ({
-  createAudioRecorder: (...args: any[]) => {
-    mockCreateAudioRecorder(...args)
+  createAudioRecorder: (opts?: { deviceId?: string }) => {
+    mockCreateAudioRecorder(opts)
     return {
       start: vi.fn().mockResolvedValue(undefined),
       stop: vi.fn().mockResolvedValue(new Blob(['audio'])),
