@@ -16,7 +16,7 @@ function escapeLatex(text: string): string {
 function processInlineText(raw: string): string {
   // Split on inline code/bold/italic boundaries, escape only plain text
   const parts: string[] = []
-  let remaining = raw
+  const remaining = raw
 
   const inlinePattern = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`|\[(.+?)\]\((.+?)\))/g
   let lastIndex = 0
@@ -36,7 +36,7 @@ function processInlineText(raw: string): string {
     } else if (full.startsWith('`')) {
       parts.push(`\\texttt{${escapeLatex(match[4])}}`)
     } else if (full.startsWith('[')) {
-      parts.push(`\\href{${match[6]}}{${escapeLatex(match[5])}}`)
+      parts.push(`\\href{${escapeLatex(match[6])}}{${escapeLatex(match[5])}}`)
     }
 
     lastIndex = match.index + full.length

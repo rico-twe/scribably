@@ -6,6 +6,7 @@ import { QRCodeTransfer } from './QRCodeTransfer'
 import { exportConfigToBase64, importConfigFromBase64 } from '../services/config'
 import { testSTTConnection, testLLMConnection } from '../services/connection-test'
 import type { AppConfig } from '../services/config-types'
+import { SUPPORTED_LANGUAGES } from '../services/languages'
 
 const STT_PROVIDERS = [
   { id: 'groq', name: 'Groq (Whisper Large v3)' },
@@ -15,13 +16,6 @@ const STT_PROVIDERS = [
 const LLM_PROVIDERS = [
   { id: 'openai-compatible', name: 'OpenAI-Compatible (OpenAI, Groq, OpenRouter, ...)' },
   { id: 'anthropic', name: 'Anthropic (Claude)' },
-]
-
-const LANGUAGES = [
-  { code: 'de', name: 'German' },
-  { code: 'en', name: 'English' },
-  { code: 'fr', name: 'Français' },
-  { code: 'es', name: 'Español' },
 ]
 
 interface SettingsPanelProps {
@@ -164,7 +158,7 @@ export function SettingsPanel({ isOpen, onClose, config, onConfigChange }: Setti
               onChange={e => onConfigChange({ language: e.target.value })}
               className="w-full appearance-none bg-bg-card rounded-[4px] px-3 py-2 text-sm text-text-primary border border-border-input focus:outline focus:outline-2 focus:outline-[rgb(20,110,245)] transition-colors"
             >
-              {LANGUAGES.map(l => (
+              {SUPPORTED_LANGUAGES.map(l => (
                 <option key={l.code} value={l.code}>{l.name}</option>
               ))}
             </select>
