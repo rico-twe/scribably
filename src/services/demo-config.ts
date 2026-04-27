@@ -4,7 +4,7 @@ export const DEMO_MAX_RECORDING_MS = 30_000
 
 export function getDemoConfig(): AppConfig | null {
   const key = import.meta.env.VITE_DEMO_GROQ_API_KEY
-  if (!key) return null
+  if (!key || key === 'undefined') return null
   return {
     sttProvider: { providerId: 'groq', apiKey: key, isDemo: true },
     llmProvider: {

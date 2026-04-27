@@ -16,6 +16,7 @@ export function loadConfig(): AppConfig {
 export function saveConfig(config: AppConfig): void {
   const toSave: AppConfig = {
     ...config,
+    // isDemo: undefined is intentional — JSON.stringify omits undefined fields, so demo flags are never persisted
     sttProvider: config.sttProvider ? { ...config.sttProvider, isDemo: undefined } : null,
     llmProvider: config.llmProvider ? { ...config.llmProvider, isDemo: undefined } : null,
   }

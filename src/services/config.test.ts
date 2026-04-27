@@ -22,7 +22,9 @@ describe('Config Service', () => {
   beforeEach(() => localStorageMock.clear())
 
   it('returns default config when localStorage is empty', () => {
+    vi.stubEnv('VITE_DEMO_GROQ_API_KEY', '')
     expect(loadConfig()).toEqual(DEFAULT_CONFIG)
+    vi.unstubAllEnvs()
   })
 
   it('saves and loads config roundtrip', () => {
