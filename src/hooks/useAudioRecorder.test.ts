@@ -1,9 +1,11 @@
 import { renderHook, act } from '@testing-library/react'
 import { useAudioRecorder } from './useAudioRecorder'
 
+// Hoisted so the variable is accessible both inside vi.mock and in beforeEach
+const listeners = vi.hoisted(() => new Set<(s: string) => void>())
+
 // Mock the audio service
 vi.mock('../services/audio', () => {
-  const listeners = new Set<(s: string) => void>()
   return {
     createAudioRecorder: () => ({
       start: vi.fn().mockImplementation(async () => {
@@ -24,6 +26,10 @@ vi.mock('../services/audio', () => {
 })
 
 describe('useAudioRecorder', () => {
+  beforeEach(() => {
+    listeners.clear()
+  })
+
   it('starts in idle state', () => {
     const { result } = renderHook(() => useAudioRecorder())
     expect(result.current.state).toBe('idle')
