@@ -7,6 +7,8 @@ interface AudioRecorderProps {
   onStartRecording: () => void;
   onStopRecording: () => void;
   onFileUpload: (file: File) => void;
+  isDemo?: boolean;
+  maxDurationReached?: boolean;
 }
 
 const ACCEPTED_TYPES = '.webm,.wav,.mp3,.m4a,.ogg'

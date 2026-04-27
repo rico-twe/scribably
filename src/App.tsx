@@ -6,6 +6,8 @@ import { useTextProcessing } from './hooks/useTextProcessing'
 import { useHistory } from './hooks/useHistory'
 import { initializeProviders } from './providers/init'
 import { isConfigured } from './services/config'
+import { isDemoConfig, DEMO_MAX_RECORDING_MS } from './services/demo-config'
+import { trimAudioToMaxDuration } from './services/audio-trim'
 import { markdownToLatex } from './services/markdown-to-latex'
 import { AudioRecorder } from './components/AudioRecorder'
 import { TranscriptionResult } from './components/TranscriptionResult'
@@ -23,7 +25,8 @@ interface AppProps {
 
 export default function App({ theme, onThemeToggle }: AppProps) {
   const { config, updateConfig } = useConfig()
-  const { state: recState, duration, audioBlob, error: recError, startRecording, stopRecording } = useAudioRecorder()
+  const isDemo = isDemoConfig(config)
+  const { state: recState, duration, audioBlob, error: recError, startRecording, stopRecording, maxDurationReached } = useAudioRecorder({ maxDurationMs: isDemo ? DEMO_MAX_RECORDING_MS : undefined })
   const { state: txState, result: txResult, error: txError, transcribe } = useTranscription()
   const { state: tpState, cleanState, promptState, cleanedText, setCleanedText, promptText, error: tpError, process } = useTextProcessing()
   const { entries: historyEntries, addEntry, updateLatest, selectedEntry, selectEntry, clearHistory } = useHistory()
@@ -116,13 +119,15 @@ export default function App({ theme, onThemeToggle }: AppProps) {
     process(text, config.llmProvider.providerId, 'prompt', config.language)
   }, [txResult, cleanedText, config, process])
 
-  const handleFileUpload = useCallback((file: File) => {
+  const handleFileUpload = useCallback(async (file: File) => {
     if (config.sttProvider) {
       selectEntry(null)
       console.log('[WP:app] File upload, triggering transcription | name:', file.name, '| size:', file.size)
-      transcribe(file, config.sttProvider.providerId, config.language)
+      lastAudioRef.current = file  // always keep original for re-transcription
+      const audioToProcess = isDemo ? await trimAudioToMaxDuration(file, 30) : file
+      transcribe(audioToProcess, config.sttProvider.providerId, config.language)
     }
-  }, [config, transcribe, selectEntry])
+  }, [config, transcribe, selectEntry, isDemo])
 
   const handleStartRecording = useCallback(() => {
     selectEntry(null)
@@ -184,6 +189,8 @@ export default function App({ theme, onThemeToggle }: AppProps) {
               onStartRecording={handleStartRecording}
               onStopRecording={stopRecording}
               onFileUpload={handleFileUpload}
+              isDemo={isDemo}
+              maxDurationReached={maxDurationReached}
             />
           </section>
 
