@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SettingsPanel } from './SettingsPanel'
 import { DEFAULT_CONFIG } from '../services/config-types'
+import type { AppConfig } from '../services/config-types'
 
 describe('SettingsPanel', () => {
   const defaultProps = {
@@ -58,5 +59,17 @@ describe('SettingsPanel', () => {
     render(<SettingsPanel {...defaultProps} onConfigChange={onConfigChange} />)
     await userEvent.type(screen.getByPlaceholderText(/custom instructions/i), 'Test')
     expect(onConfigChange).toHaveBeenCalled()
+  })
+
+  it('shows demo mode block when config has isDemo flag', () => {
+    const demoConfig: AppConfig = {
+      sttProvider: { providerId: 'groq', apiKey: 'gsk_demo', isDemo: true },
+      llmProvider: { providerId: 'openai-compatible', apiKey: 'gsk_demo', isDemo: true },
+      language: 'en',
+      enableCleaning: true,
+    }
+    render(<SettingsPanel isOpen config={demoConfig} onClose={() => {}} onConfigChange={() => {}} />)
+    expect(screen.getByText(/demo mode active/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /reset to demo mode/i })).toBeInTheDocument()
   })
 })

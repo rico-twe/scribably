@@ -30,6 +30,18 @@ export function AudioRecorder({
 
   return (
     <div className="flex flex-col items-center gap-6 py-4">
+      {isDemo && (
+        <div className="w-full flex items-start gap-2 px-3 py-2 rounded-[10px] bg-lemon-400/10 border border-lemon-400/30">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-lemon-500 mt-0.5 flex-shrink-0" aria-hidden>
+            <circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>
+          </svg>
+          <p className="text-[11px] text-text-secondary leading-relaxed font-clay-ui">
+            {maxDurationReached
+              ? 'Demo limit reached (30 s). Open Settings to enter your own key for unlimited recordings.'
+              : 'Demo mode — recordings are capped at 30 s. Open Settings to use your own key.'}
+          </p>
+        </div>
+      )}
       <RecordButton
         state={recordingState}
         duration={duration}

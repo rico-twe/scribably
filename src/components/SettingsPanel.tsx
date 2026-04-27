@@ -3,7 +3,8 @@ import { getSystemPrompt } from '../providers/text-processing/prompts'
 import { ProviderConfig } from './ProviderConfig'
 import { ConnectionTestButton } from './ConnectionTestButton'
 import { QRCodeTransfer } from './QRCodeTransfer'
-import { exportConfigToBase64, importConfigFromBase64 } from '../services/config'
+import { exportConfigToBase64, importConfigFromBase64, clearConfig } from '../services/config'
+import { isDemoConfig } from '../services/demo-config'
 import { testSTTConnection, testLLMConnection } from '../services/connection-test'
 import type { AppConfig } from '../services/config-types'
 
@@ -77,6 +78,21 @@ export function SettingsPanel({ isOpen, onClose, config, onConfigChange }: Setti
               </svg>
             </button>
           </div>
+
+          {isDemoConfig(config) && (
+            <div className="rounded-[12px] bg-lemon-400/10 border border-lemon-400/30 p-4 space-y-2">
+              <p className="text-[11px] font-clay-ui label-uppercase text-lemon-500">Demo mode active</p>
+              <p className="text-xs text-text-secondary leading-relaxed">
+                Using a shared demo key — recordings are capped at 30 s. Enter your own API key below to unlock full access.
+              </p>
+              <button
+                onClick={() => { clearConfig(); window.location.reload() }}
+                className="text-[11px] font-clay-ui text-text-tertiary hover:text-text-secondary underline underline-offset-2 transition-colors"
+              >
+                Reset to demo mode
+              </button>
+            </div>
+          )}
 
           {/* Speech-to-Text */}
           <section className="space-y-3">
