@@ -1,19 +1,25 @@
 import { type AppConfig, DEFAULT_CONFIG } from './config-types'
+import { getDemoConfig } from './demo-config'
 
 const STORAGE_KEY = 'scribably-config'
 
 export function loadConfig(): AppConfig {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return DEFAULT_CONFIG
+    if (!raw) return getDemoConfig() ?? DEFAULT_CONFIG
     return { ...DEFAULT_CONFIG, ...JSON.parse(raw) }
   } catch {
-    return DEFAULT_CONFIG
+    return getDemoConfig() ?? DEFAULT_CONFIG
   }
 }
 
 export function saveConfig(config: AppConfig): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(config))
+  const toSave: AppConfig = {
+    ...config,
+    sttProvider: config.sttProvider ? { ...config.sttProvider, isDemo: undefined } : null,
+    llmProvider: config.llmProvider ? { ...config.llmProvider, isDemo: undefined } : null,
+  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave))
 }
 
 export function clearConfig(): void {

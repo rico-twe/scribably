@@ -3,6 +3,7 @@ export interface ProviderConfig {
   apiKey: string;
   baseUrl?: string;
   model?: string;
+  isDemo?: boolean;
 }
 
 export interface AppConfig {

@@ -67,4 +67,23 @@ describe('Config Service', () => {
     }
     expect(isConfigured(config)).toBe(true)
   })
+
+  it('returns demo config when localStorage is empty and env var is set', () => {
+    vi.stubEnv('VITE_DEMO_GROQ_API_KEY', 'gsk_test_demo')
+    const config = loadConfig()
+    expect(config.sttProvider?.providerId).toBe('groq')
+    expect(config.sttProvider?.isDemo).toBe(true)
+    vi.unstubAllEnvs()
+  })
+
+  it('saveConfig does not persist isDemo flag', () => {
+    const config: AppConfig = {
+      sttProvider: { providerId: 'groq', apiKey: 'gsk_test', isDemo: true },
+      llmProvider: null,
+      language: 'en',
+    }
+    saveConfig(config)
+    const loaded = loadConfig()
+    expect(loaded.sttProvider?.isDemo).toBeUndefined()
+  })
 })
