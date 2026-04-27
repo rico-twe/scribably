@@ -124,7 +124,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
       selectEntry(null)
       console.log('[WP:app] File upload, triggering transcription | name:', file.name, '| size:', file.size)
       lastAudioRef.current = file  // always keep original for re-transcription
-      const audioToProcess = isDemo ? await trimAudioToMaxDuration(file, 30) : file
+      const audioToProcess = isDemo ? await trimAudioToMaxDuration(file, DEMO_MAX_RECORDING_MS / 1000) : file
       transcribe(audioToProcess, config.sttProvider.providerId, config.language)
     }
   }, [config, transcribe, selectEntry, isDemo])

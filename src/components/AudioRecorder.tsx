@@ -15,6 +15,7 @@ const ACCEPTED_TYPES = '.webm,.wav,.mp3,.m4a,.ogg'
 
 export function AudioRecorder({
   recordingState, duration, onStartRecording, onStopRecording, onFileUpload,
+  isDemo, maxDurationReached,
 }: AudioRecorderProps) {
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
