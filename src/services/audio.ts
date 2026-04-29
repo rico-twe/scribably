@@ -6,6 +6,7 @@ export interface AudioRecorderService {
   getState(): RecordingState;
   getDuration(): number;
   onStateChange(callback: (state: RecordingState) => void): () => void;
+  usedFallback: boolean;
   getAnalyser(): AnalyserNode | null;
 }
 
@@ -22,9 +23,12 @@ function getSupportedMimeType(): string {
   throw new Error('No supported audio format found in this browser.')
 }
 
-function getMediaStream(): Promise<MediaStream> {
+function getMediaStream(deviceId?: string): Promise<MediaStream> {
+  const constraints: MediaStreamConstraints = {
+    audio: deviceId ? { deviceId: { exact: deviceId } } : true,
+  }
   if (navigator.mediaDevices?.getUserMedia) {
-    return navigator.mediaDevices.getUserMedia({ audio: true })
+    return navigator.mediaDevices.getUserMedia(constraints)
   }
   type LegacyGetUserMedia = (
     constraints: MediaStreamConstraints,
@@ -39,13 +43,20 @@ function getMediaStream(): Promise<MediaStream> {
   const legacyGetUserMedia = nav.getUserMedia || nav.webkitGetUserMedia || nav.mozGetUserMedia
   if (legacyGetUserMedia) {
     return new Promise((resolve, reject) => {
-      legacyGetUserMedia.call(navigator, { audio: true }, resolve, reject)
+      legacyGetUserMedia.call(navigator, constraints, resolve, reject)
     })
   }
   throw new Error('Microphone access is not available in this browser.')
 }
 
-export function createAudioRecorder(): AudioRecorderService {
+export async function listAudioInputDevices(): Promise<{ deviceId: string; label: string }[]> {
+  const devices = await (navigator.mediaDevices?.enumerateDevices() ?? Promise.resolve([]))
+  return devices
+    .filter(d => d.kind === 'audioinput')
+    .map(d => ({ deviceId: d.deviceId, label: d.label || d.deviceId }))
+}
+
+export function createAudioRecorder(opts?: { deviceId?: string }): AudioRecorderService {
   let state: RecordingState = 'idle'
   let mediaRecorder: MediaRecorder | null = null
   let audioContext: AudioContext | null = null
@@ -61,9 +72,28 @@ export function createAudioRecorder(): AudioRecorderService {
   }
 
   const service: AudioRecorderService = {
+    usedFallback: false,
+
     async start() {
       const mimeType = getSupportedMimeType()
-      const stream = await getMediaStream()
+      service.usedFallback = false
+      let stream: MediaStream
+      const deviceId = opts?.deviceId
+      if (deviceId) {
+        try {
+          stream = await getMediaStream(deviceId)
+        } catch (err) {
+          const name = err instanceof Error ? err.name : ''
+          if (name === 'OverconstrainedError' || name === 'NotFoundError') {
+            service.usedFallback = true
+            stream = await getMediaStream()
+          } else {
+            throw err
+          }
+        }
+      } else {
+        stream = await getMediaStream()
+      }
 
       audioContext = new AudioContext()
       analyser = audioContext.createAnalyser()

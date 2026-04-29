@@ -10,6 +10,7 @@ import { markdownToLatex } from './services/markdown-to-latex'
 import { normalizeLanguage, SUPPORTED_LANGUAGES } from './services/languages'
 import { recordCorrection, getTopCorrection } from './services/language-feedback'
 import { AudioRecorder } from './components/AudioRecorder'
+import { AudioPlayer } from './components/AudioPlayer'
 import { TranscriptionResult } from './components/TranscriptionResult'
 import { ExportBar } from './components/ExportBar'
 import { HistoryList } from './components/HistoryList'
@@ -25,14 +26,31 @@ interface AppProps {
 
 export default function App({ theme, onThemeToggle }: AppProps) {
   const { config, updateConfig } = useConfig()
-  const { state: recState, duration, audioBlob, error: recError, level, isClipping, isSilent, startRecording, stopRecording } = useAudioRecorder()
+  const { state: recState, duration, audioBlob, error: recError, warning: recWarning, level, isClipping, isSilent, startRecording, stopRecording } = useAudioRecorder(config.audioDeviceId ?? undefined)
   const { state: txState, result: txResult, error: txError, transcribe } = useTranscription()
   const { state: tpState, cleanState, promptState, cleanedText, setCleanedText, promptText, error: tpError, process } = useTextProcessing()
   const { entries: historyEntries, addEntry, updateLatest, selectedEntry, selectEntry, clearHistory } = useHistory()
   const lastSavedTxRef = useRef<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(() => !isConfigured(config))
   const [showLatex, setShowLatex] = useState(false)
+  const [uploadedFile, setUploadedFile] = useState<Blob | null>(null)
+  const [currentTime, setCurrentTime] = useState(0)
+  const audioRef = useRef<HTMLAudioElement>(null)
   const lastAudioRef = useRef<Blob | null>(null)
+
+  const activePlayerBlob = audioBlob ?? uploadedFile
+  const audioUrl = useMemo(
+    () => (activePlayerBlob ? URL.createObjectURL(activePlayerBlob) : null),
+    [activePlayerBlob],
+  )
+  useEffect(() => () => { if (audioUrl) URL.revokeObjectURL(audioUrl) }, [audioUrl])
+
+  const seekTo = useCallback((t: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = t
+      audioRef.current.play()
+    }
+  }, [])
 
   const processingEnabled = config.enableCleaning || config.enablePrompt
 
@@ -119,6 +137,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   const handleFileUpload = useCallback((file: File) => {
     if (config.sttProvider) {
       selectEntry(null)
+      setUploadedFile(file)
       console.log('[WP:app] File upload, triggering transcription | name:', file.name, '| size:', file.size)
       lastAudioRef.current = file
       transcribe(file, config.sttProvider.providerId, config.language)
@@ -156,6 +175,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   const exportText = displayPromptText || displayCleanedText || displayRawText || ''
   const latexText = useMemo(() => exportText ? markdownToLatex(exportText) : null, [exportText])
   const hasResult = !!(displayRawText)
+  const segments = isViewingHistory ? undefined : txResult?.segments
 
   const txDetectedLanguage = useMemo(() => {
     if (txState !== 'done' || !txResult?.language) return null
@@ -220,6 +240,15 @@ export default function App({ theme, onThemeToggle }: AppProps) {
             </div>
           )}
 
+          {recWarning && (
+            <div className="animate-fade-in flex items-start gap-2 px-3 py-2 rounded-[8px] bg-lemon-400/10 border border-lemon-400/30">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-lemon-600 mt-0.5 flex-shrink-0">
+                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" x2="12" y1="9" y2="13" /><line x1="12" x2="12.01" y1="17" y2="17" />
+              </svg>
+              <p className="text-lemon-700 dark:text-lemon-400 text-xs leading-relaxed">{recWarning}</p>
+            </div>
+          )}
+
           {(recError || txError || tpError) && (
             <div className="animate-fade-in flex items-start gap-2 px-3 py-2 rounded-[8px] bg-pomegranate-400/10 border border-pomegranate-400/30">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-pomegranate-400 mt-0.5 flex-shrink-0">
@@ -254,6 +283,13 @@ export default function App({ theme, onThemeToggle }: AppProps) {
               </span>
             )}
           </div>
+          {audioUrl && hasResult && !isViewingHistory && (
+            <AudioPlayer
+              src={audioUrl}
+              audioRef={audioRef}
+              onTimeUpdate={setCurrentTime}
+            />
+          )}
           <TranscriptionResult
             rawText={displayRawText}
             cleanedText={displayCleanedText}
@@ -268,6 +304,9 @@ export default function App({ theme, onThemeToggle }: AppProps) {
             onCleanedTextChange={!isViewingHistory ? setCleanedText : undefined}
             showLatex={showLatex}
             latexText={latexText}
+            segments={segments}
+            currentTime={currentTime}
+            onSeek={seekTo}
             detectedLanguage={!isViewingHistory ? txDetectedLanguage ?? undefined : undefined}
             availableLanguages={[...SUPPORTED_LANGUAGES]}
             onLanguageCorrection={!isViewingHistory ? handleReTranscribe : undefined}
@@ -280,6 +319,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
             disabled={!displayRawText}
             showLatex={showLatex}
             onToggleLatex={() => setShowLatex(prev => !prev)}
+            segments={segments}
           />
         </div>
 

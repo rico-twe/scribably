@@ -6,11 +6,12 @@ const SILENCE_DURATION_MS = 5000
 const CLIPPING_THRESHOLD = 0.98
 const CLIPPING_FRAMES = 2
 
-export function useAudioRecorder() {
+export function useAudioRecorder(deviceId?: string) {
   const [state, setState] = useState<RecordingState>('idle')
   const [duration, setDuration] = useState(0)
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [warning, setWarning] = useState<string | null>(null)
   const [level, setLevel] = useState(0)
   const [peak, setPeak] = useState(0)
   const [isClipping, setIsClipping] = useState(false)
@@ -75,6 +76,7 @@ export function useAudioRecorder() {
   const startRecording = useCallback(async () => {
     try {
       setError(null)
+      setWarning(null)
       setAudioBlob(null)
       setLevel(0)
       setPeak(0)
@@ -82,10 +84,13 @@ export function useAudioRecorder() {
       setIsSilent(false)
       clippingFramesRef.current = 0
       silentSinceRef.current = null
-      const recorder = createAudioRecorder()
+      const recorder = createAudioRecorder({ deviceId })
       recorderRef.current = recorder
       recorder.onStateChange(setState)
       await recorder.start()
+      if (recorder.usedFallback) {
+        setWarning('Selected microphone not available. Using default.')
+      }
       startLevelLoop(recorder)
       intervalRef.current = setInterval(() => {
         setDuration(recorder.getDuration())
@@ -94,7 +99,7 @@ export function useAudioRecorder() {
       setError(err instanceof Error ? err.message : 'Recording failed')
       setState('error')
     }
-  }, [startLevelLoop])
+  }, [deviceId, startLevelLoop])
 
   const stopRecording = useCallback(async () => {
     stopRaf()
@@ -120,5 +125,5 @@ export function useAudioRecorder() {
     }
   }, [stopRaf])
 
-  return { state, duration, audioBlob, error, level, peak, isClipping, isSilent, startRecording, stopRecording }
+  return { state, duration, audioBlob, error, warning, level, peak, isClipping, isSilent, startRecording, stopRecording }
 }
