@@ -52,7 +52,7 @@ export function LandingPage({ theme, onThemeToggle }: LandingPageProps) {
             </>
           }
           bullets={[
-            'BYOK — no proxies, no shared accounts',
+            'Try it now — no signup, no account. Bring your own key for unlimited use.',
             'localStorage only — nothing on a backend',
             'Open source — code is on GitHub',
             'Apache-2.0 — fork it, self-host it, take it apart',
