@@ -12,6 +12,8 @@ interface UseAudioRecorderOptions {
 }
 
 export function useAudioRecorder(options?: UseAudioRecorderOptions) {
+  const deviceId = options?.deviceId
+  const maxDurationMs = options?.maxDurationMs
   const [state, setState] = useState<RecordingState>('idle')
   const [duration, setDuration] = useState(0)
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
@@ -110,7 +112,7 @@ export function useAudioRecorder(options?: UseAudioRecorderOptions) {
       setIsSilent(false)
       clippingFramesRef.current = 0
       silentSinceRef.current = null
-      const recorder = createAudioRecorder({ deviceId: options?.deviceId })
+      const recorder = createAudioRecorder({ deviceId })
       recorderRef.current = recorder
       recorder.onStateChange(setState)
       await recorder.start()
@@ -121,17 +123,17 @@ export function useAudioRecorder(options?: UseAudioRecorderOptions) {
       intervalRef.current = setInterval(() => {
         setDuration(recorder.getDuration())
       }, 100)
-      if (options?.maxDurationMs) {
+      if (maxDurationMs) {
         timeoutRef.current = setTimeout(() => {
           setMaxDurationReached(true)
           stopRecording()
-        }, options.maxDurationMs)
+        }, maxDurationMs)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Recording failed')
       setState('error')
     }
-  }, [options?.deviceId, options?.maxDurationMs, startLevelLoop, stopRecording])
+  }, [deviceId, maxDurationMs, startLevelLoop, stopRecording])
 
   useEffect(() => {
     return () => {
