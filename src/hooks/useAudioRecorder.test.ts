@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react'
 import { useAudioRecorder } from './useAudioRecorder'
 
+const listeners = vi.hoisted(() => new Set<(s: string) => void>())
 const mockGetByteTimeDomainData = vi.fn().mockImplementation((buf: Uint8Array) => buf.fill(128))
 const mockAnalyser = { getByteTimeDomainData: mockGetByteTimeDomainData }
 let mockAnalyserEnabled = false
@@ -12,11 +13,19 @@ vi.mock('../services/audio', () => ({
   createAudioRecorder: (opts?: { deviceId?: string }) => {
     mockCreateAudioRecorder(opts)
     return {
-      start: vi.fn().mockResolvedValue(undefined),
-      stop: vi.fn().mockResolvedValue(new Blob(['audio'])),
+      start: vi.fn().mockImplementation(async () => {
+        listeners.forEach(cb => cb('recording'))
+      }),
+      stop: vi.fn().mockImplementation(async () => {
+        listeners.forEach(cb => cb('idle'))
+        return new Blob(['audio'])
+      }),
       getState: vi.fn().mockReturnValue('idle'),
       getDuration: mockGetDuration,
-      onStateChange: vi.fn().mockReturnValue(() => {}),
+      onStateChange: vi.fn().mockImplementation((cb: (s: string) => void) => {
+        listeners.add(cb)
+        return () => listeners.delete(cb)
+      }),
       getAnalyser: vi.fn().mockImplementation(() => mockAnalyserEnabled ? mockAnalyser : null),
       get usedFallback() { return mockUsedFallback },
     }
@@ -24,6 +33,7 @@ vi.mock('../services/audio', () => ({
 }))
 
 beforeEach(() => {
+  listeners.clear()
   mockAnalyserEnabled = false
   mockUsedFallback = false
   mockGetByteTimeDomainData.mockImplementation((buf: Uint8Array) => buf.fill(128))
@@ -57,8 +67,13 @@ describe('useAudioRecorder', () => {
     expect(result.current.isSilent).toBe(false)
   })
 
+  it('maxDurationReached is false initially', () => {
+    const { result } = renderHook(() => useAudioRecorder())
+    expect(result.current.maxDurationReached).toBe(false)
+  })
+
   it('passes deviceId to createAudioRecorder', async () => {
-    const { result } = renderHook(() => useAudioRecorder('mic-1'))
+    const { result } = renderHook(() => useAudioRecorder({ deviceId: 'mic-1' }))
     await act(() => result.current.startRecording())
     expect(mockCreateAudioRecorder).toHaveBeenCalledWith({ deviceId: 'mic-1' })
   })
@@ -71,7 +86,7 @@ describe('useAudioRecorder', () => {
 
   it('sets warning when recorder used fallback', async () => {
     mockUsedFallback = true
-    const { result } = renderHook(() => useAudioRecorder('missing-mic'))
+    const { result } = renderHook(() => useAudioRecorder({ deviceId: 'missing-mic' }))
     await act(() => result.current.startRecording())
     expect(result.current.warning).toBeTruthy()
     expect(result.current.warning).toMatch(/not available/i)
@@ -79,7 +94,7 @@ describe('useAudioRecorder', () => {
 
   it('warning is null when no fallback used', async () => {
     mockUsedFallback = false
-    const { result } = renderHook(() => useAudioRecorder('mic-1'))
+    const { result } = renderHook(() => useAudioRecorder({ deviceId: 'mic-1' }))
     await act(() => result.current.startRecording())
     expect(result.current.warning).toBeNull()
   })
@@ -96,5 +111,73 @@ describe('useAudioRecorder', () => {
     })
 
     expect(result.current.isClipping).toBe(true)
+  })
+
+  describe('without maxDurationMs', () => {
+    it('does not auto-stop after 1000 ms', async () => {
+      vi.useFakeTimers()
+      const { result } = renderHook(() => useAudioRecorder())
+
+      await act(async () => {
+        await result.current.startRecording()
+      })
+
+      expect(result.current.state).toBe('recording')
+
+      act(() => {
+        vi.advanceTimersByTime(1000)
+      })
+
+      expect(result.current.state).toBe('recording')
+      expect(result.current.maxDurationReached).toBe(false)
+
+      vi.useRealTimers()
+    })
+  })
+
+  describe('with maxDurationMs', () => {
+    it('auto-stops after maxDurationMs and sets maxDurationReached', async () => {
+      vi.useFakeTimers()
+      const { result } = renderHook(() => useAudioRecorder({ maxDurationMs: 1000 }))
+
+      await act(async () => {
+        await result.current.startRecording()
+      })
+
+      expect(result.current.state).toBe('recording')
+      expect(result.current.maxDurationReached).toBe(false)
+
+      await act(async () => {
+        vi.advanceTimersByTime(1000)
+      })
+
+      expect(result.current.maxDurationReached).toBe(true)
+      expect(result.current.state).toBe('idle')
+
+      vi.useRealTimers()
+    })
+
+    it('resets maxDurationReached on next startRecording', async () => {
+      vi.useFakeTimers()
+      const { result } = renderHook(() => useAudioRecorder({ maxDurationMs: 500 }))
+
+      await act(async () => {
+        await result.current.startRecording()
+      })
+
+      await act(async () => {
+        vi.advanceTimersByTime(500)
+      })
+
+      expect(result.current.maxDurationReached).toBe(true)
+
+      await act(async () => {
+        await result.current.startRecording()
+      })
+
+      expect(result.current.maxDurationReached).toBe(false)
+
+      vi.useRealTimers()
+    })
   })
 })

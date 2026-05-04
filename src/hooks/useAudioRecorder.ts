@@ -6,7 +6,14 @@ const SILENCE_DURATION_MS = 5000
 const CLIPPING_THRESHOLD = 0.98
 const CLIPPING_FRAMES = 2
 
-export function useAudioRecorder(deviceId?: string) {
+interface UseAudioRecorderOptions {
+  deviceId?: string
+  maxDurationMs?: number
+}
+
+export function useAudioRecorder(options?: UseAudioRecorderOptions) {
+  const deviceId = options?.deviceId
+  const maxDurationMs = options?.maxDurationMs
   const [state, setState] = useState<RecordingState>('idle')
   const [duration, setDuration] = useState(0)
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
@@ -16,9 +23,11 @@ export function useAudioRecorder(deviceId?: string) {
   const [peak, setPeak] = useState(0)
   const [isClipping, setIsClipping] = useState(false)
   const [isSilent, setIsSilent] = useState(false)
+  const [maxDurationReached, setMaxDurationReached] = useState(false)
   const recorderRef = useRef<AudioRecorderService | null>(null)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const rafRef = useRef<number | null>(null)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const clippingFramesRef = useRef(0)
   const silentSinceRef = useRef<number | null>(null)
 
@@ -73,11 +82,30 @@ export function useAudioRecorder(deviceId?: string) {
     rafRef.current = requestAnimationFrame(tick)
   }, [])
 
+  const stopRecording = useCallback(async () => {
+    stopRaf()
+    if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null }
+    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null }
+    if (!recorderRef.current) return
+    try {
+      const blob = await recorderRef.current.stop()
+      setAudioBlob(blob)
+      setDuration(0)
+      setLevel(0)
+      setPeak(0)
+      setIsClipping(false)
+      setIsSilent(false)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Stop failed')
+    }
+  }, [stopRaf])
+
   const startRecording = useCallback(async () => {
     try {
       setError(null)
       setWarning(null)
       setAudioBlob(null)
+      setMaxDurationReached(false)
       setLevel(0)
       setPeak(0)
       setIsClipping(false)
@@ -95,35 +123,25 @@ export function useAudioRecorder(deviceId?: string) {
       intervalRef.current = setInterval(() => {
         setDuration(recorder.getDuration())
       }, 100)
+      if (maxDurationMs) {
+        timeoutRef.current = setTimeout(() => {
+          setMaxDurationReached(true)
+          stopRecording()
+        }, maxDurationMs)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Recording failed')
       setState('error')
     }
-  }, [deviceId, startLevelLoop])
-
-  const stopRecording = useCallback(async () => {
-    stopRaf()
-    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null }
-    if (!recorderRef.current) return
-    try {
-      const blob = await recorderRef.current.stop()
-      setAudioBlob(blob)
-      setDuration(0)
-      setLevel(0)
-      setPeak(0)
-      setIsClipping(false)
-      setIsSilent(false)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Stop failed')
-    }
-  }, [stopRaf])
+  }, [deviceId, maxDurationMs, startLevelLoop, stopRecording])
 
   useEffect(() => {
     return () => {
       stopRaf()
       if (intervalRef.current) clearInterval(intervalRef.current)
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
     }
   }, [stopRaf])
 
-  return { state, duration, audioBlob, error, warning, level, peak, isClipping, isSilent, startRecording, stopRecording }
+  return { state, duration, audioBlob, error, warning, level, peak, isClipping, isSilent, maxDurationReached, startRecording, stopRecording }
 }
