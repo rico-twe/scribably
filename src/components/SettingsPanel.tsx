@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { getSystemPrompt } from '../providers/text-processing/prompts'
 import { ProviderConfig } from './ProviderConfig'
@@ -6,7 +7,9 @@ import { QRCodeTransfer } from './QRCodeTransfer'
 import { exportConfigToBase64, importConfigFromBase64, clearConfig } from '../services/config'
 import { isDemoConfig } from '../services/demo-config'
 import { testSTTConnection, testLLMConnection } from '../services/connection-test'
+import { listAudioInputDevices } from '../services/audio'
 import type { AppConfig } from '../services/config-types'
+import { SUPPORTED_LANGUAGES } from '../services/languages'
 
 const STT_PROVIDERS = [
   { id: 'groq', name: 'Groq (Whisper Large v3)' },
@@ -16,13 +19,6 @@ const STT_PROVIDERS = [
 const LLM_PROVIDERS = [
   { id: 'openai-compatible', name: 'OpenAI-Compatible (OpenAI, Groq, OpenRouter, ...)' },
   { id: 'anthropic', name: 'Anthropic (Claude)' },
-]
-
-const LANGUAGES = [
-  { code: 'de', name: 'German' },
-  { code: 'en', name: 'English' },
-  { code: 'fr', name: 'Français' },
-  { code: 'es', name: 'Español' },
 ]
 
 interface SettingsPanelProps {
@@ -39,6 +35,14 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 export function SettingsPanel({ isOpen, onClose, config, onConfigChange }: SettingsPanelProps) {
+  const [audioDevices, setAudioDevices] = useState<{ deviceId: string; label: string }[]>([])
+
+  useEffect(() => {
+    let cancelled = false
+    listAudioInputDevices().then(devices => { if (!cancelled) setAudioDevices(devices) }).catch(() => {})
+    return () => { cancelled = true }
+  }, [])
+
   const handleImport = (encoded: string) => {
     try {
       const imported = importConfigFromBase64(encoded)
@@ -180,11 +184,36 @@ export function SettingsPanel({ isOpen, onClose, config, onConfigChange }: Setti
               onChange={e => onConfigChange({ language: e.target.value })}
               className="w-full appearance-none bg-bg-card rounded-[4px] px-3 py-2 text-sm text-text-primary border border-border-input focus:outline focus:outline-2 focus:outline-[rgb(20,110,245)] transition-colors"
             >
-              {LANGUAGES.map(l => (
+              {SUPPORTED_LANGUAGES.map(l => (
                 <option key={l.code} value={l.code}>{l.name}</option>
               ))}
             </select>
           </section>
+
+          {/* Divider */}
+          <div className="border-t border-border-oat" />
+
+          {/* Microphone */}
+          <section>
+            <SectionLabel>Microphone</SectionLabel>
+            {audioDevices.length === 0 ? (
+              <p className="text-xs text-text-tertiary">Grant microphone permission to see device names.</p>
+            ) : (
+              <select
+                value={config.audioDeviceId ?? ''}
+                onChange={e => onConfigChange({ audioDeviceId: e.target.value || undefined })}
+                className="w-full appearance-none bg-bg-card rounded-[4px] px-3 py-2 text-sm text-text-primary border border-border-input focus:outline focus:outline-2 focus:outline-[rgb(20,110,245)] transition-colors"
+              >
+                <option value="">Default</option>
+                {audioDevices.map(d => (
+                  <option key={d.deviceId} value={d.deviceId}>{d.label}</option>
+                ))}
+              </select>
+            )}
+          </section>
+
+          {/* Divider */}
+          <div className="border-t border-border-oat" />
 
           {/* Custom prompt */}
           <section>

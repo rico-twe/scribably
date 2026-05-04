@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { RecordButton } from './RecordButton'
+import { LevelMeter } from './LevelMeter'
 
 interface AudioRecorderProps {
   recordingState: 'idle' | 'recording' | 'processing' | 'done' | 'error';
@@ -9,6 +10,9 @@ interface AudioRecorderProps {
   onFileUpload: (file: File) => void;
   isDemo?: boolean;
   maxDurationReached?: boolean;
+  level?: number;
+  isClipping?: boolean;
+  isSilent?: boolean;
 }
 
 const ACCEPTED_TYPES = '.webm,.wav,.mp3,.m4a,.ogg'
@@ -16,6 +20,7 @@ const ACCEPTED_TYPES = '.webm,.wav,.mp3,.m4a,.ogg'
 export function AudioRecorder({
   recordingState, duration, onStartRecording, onStopRecording, onFileUpload,
   isDemo, maxDurationReached,
+  level = 0, isClipping = false, isSilent = false,
 }: AudioRecorderProps) {
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -27,6 +32,8 @@ export function AudioRecorder({
     const file = e.target.files?.[0]
     if (file) onFileUpload(file)
   }, [onFileUpload])
+
+  const isRecording = recordingState === 'recording'
 
   return (
     <div className="flex flex-col items-center gap-6 py-4">
@@ -48,6 +55,23 @@ export function AudioRecorder({
         onStartRecording={onStartRecording}
         onStopRecording={onStopRecording}
       />
+
+      {isRecording && (
+        <div className="w-full flex flex-col gap-2">
+          <LevelMeter level={level} isClipping={isClipping} isSilent={isSilent} />
+          {isClipping && (
+            <p className="text-[11px] text-pomegranate-500 font-clay-ui text-center">
+              Eingangspegel übersteuert
+            </p>
+          )}
+          {isSilent && !isClipping && (
+            <p className="text-[11px] text-lemon-700 dark:text-lemon-400 font-clay-ui text-center">
+              Kein Audio-Signal
+            </p>
+          )}
+        </div>
+      )}
+
       <div
         onDrop={handleDrop}
         onDragOver={e => e.preventDefault()}

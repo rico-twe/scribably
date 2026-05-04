@@ -1,13 +1,18 @@
 import { renderHook, act } from '@testing-library/react'
 import { useAudioRecorder } from './useAudioRecorder'
 
-// Hoisted so the variable is accessible both inside vi.mock and in beforeEach
 const listeners = vi.hoisted(() => new Set<(s: string) => void>())
+const mockGetByteTimeDomainData = vi.fn().mockImplementation((buf: Uint8Array) => buf.fill(128))
+const mockAnalyser = { getByteTimeDomainData: mockGetByteTimeDomainData }
+let mockAnalyserEnabled = false
+let mockUsedFallback = false
+const mockCreateAudioRecorder = vi.fn()
+const mockGetDuration = vi.fn().mockReturnValue(0)
 
-// Mock the audio service
-vi.mock('../services/audio', () => {
-  return {
-    createAudioRecorder: () => ({
+vi.mock('../services/audio', () => ({
+  createAudioRecorder: (opts?: { deviceId?: string }) => {
+    mockCreateAudioRecorder(opts)
+    return {
       start: vi.fn().mockImplementation(async () => {
         listeners.forEach(cb => cb('recording'))
       }),
@@ -16,20 +21,26 @@ vi.mock('../services/audio', () => {
         return new Blob(['audio'])
       }),
       getState: vi.fn().mockReturnValue('idle'),
-      getDuration: vi.fn().mockReturnValue(0),
+      getDuration: mockGetDuration,
       onStateChange: vi.fn().mockImplementation((cb: (s: string) => void) => {
         listeners.add(cb)
         return () => listeners.delete(cb)
       }),
-    }),
-  }
+      getAnalyser: vi.fn().mockImplementation(() => mockAnalyserEnabled ? mockAnalyser : null),
+      get usedFallback() { return mockUsedFallback },
+    }
+  },
+}))
+
+beforeEach(() => {
+  listeners.clear()
+  mockAnalyserEnabled = false
+  mockUsedFallback = false
+  mockGetByteTimeDomainData.mockImplementation((buf: Uint8Array) => buf.fill(128))
+  vi.clearAllMocks()
 })
 
 describe('useAudioRecorder', () => {
-  beforeEach(() => {
-    listeners.clear()
-  })
-
   it('starts in idle state', () => {
     const { result } = renderHook(() => useAudioRecorder())
     expect(result.current.state).toBe('idle')
@@ -41,9 +52,65 @@ describe('useAudioRecorder', () => {
     expect(typeof result.current.stopRecording).toBe('function')
   })
 
+  it('exposes level, peak, isClipping, isSilent', () => {
+    const { result } = renderHook(() => useAudioRecorder())
+    expect(typeof result.current.level).toBe('number')
+    expect(typeof result.current.peak).toBe('number')
+    expect(typeof result.current.isClipping).toBe('boolean')
+    expect(typeof result.current.isSilent).toBe('boolean')
+  })
+
+  it('level is 0 before recording starts', () => {
+    const { result } = renderHook(() => useAudioRecorder())
+    expect(result.current.level).toBe(0)
+    expect(result.current.isClipping).toBe(false)
+    expect(result.current.isSilent).toBe(false)
+  })
+
   it('maxDurationReached is false initially', () => {
     const { result } = renderHook(() => useAudioRecorder())
     expect(result.current.maxDurationReached).toBe(false)
+  })
+
+  it('passes deviceId to createAudioRecorder', async () => {
+    const { result } = renderHook(() => useAudioRecorder({ deviceId: 'mic-1' }))
+    await act(() => result.current.startRecording())
+    expect(mockCreateAudioRecorder).toHaveBeenCalledWith({ deviceId: 'mic-1' })
+  })
+
+  it('passes undefined deviceId when no arg given', async () => {
+    const { result } = renderHook(() => useAudioRecorder())
+    await act(() => result.current.startRecording())
+    expect(mockCreateAudioRecorder).toHaveBeenCalledWith({ deviceId: undefined })
+  })
+
+  it('sets warning when recorder used fallback', async () => {
+    mockUsedFallback = true
+    const { result } = renderHook(() => useAudioRecorder({ deviceId: 'missing-mic' }))
+    await act(() => result.current.startRecording())
+    expect(result.current.warning).toBeTruthy()
+    expect(result.current.warning).toMatch(/not available/i)
+  })
+
+  it('warning is null when no fallback used', async () => {
+    mockUsedFallback = false
+    const { result } = renderHook(() => useAudioRecorder({ deviceId: 'mic-1' }))
+    await act(() => result.current.startRecording())
+    expect(result.current.warning).toBeNull()
+  })
+
+  it('detects clipping when peak reaches threshold', async () => {
+    mockAnalyserEnabled = true
+    mockGetByteTimeDomainData.mockImplementation((buf: Uint8Array) => buf.fill(255))
+
+    const { result } = renderHook(() => useAudioRecorder())
+    await act(() => result.current.startRecording())
+
+    await act(async () => {
+      await new Promise(r => setTimeout(r, 50))
+    })
+
+    expect(result.current.isClipping).toBe(true)
   })
 
   describe('without maxDurationMs', () => {

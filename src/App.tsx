@@ -9,7 +9,10 @@ import { isConfigured } from './services/config'
 import { isDemoConfig, DEMO_MAX_RECORDING_MS } from './services/demo-config'
 import { trimAudioToMaxDuration } from './services/audio-trim'
 import { markdownToLatex } from './services/markdown-to-latex'
+import { normalizeLanguage, SUPPORTED_LANGUAGES } from './services/languages'
+import { recordCorrection, getTopCorrection } from './services/language-feedback'
 import { AudioRecorder } from './components/AudioRecorder'
+import { AudioPlayer } from './components/AudioPlayer'
 import { TranscriptionResult } from './components/TranscriptionResult'
 import { ExportBar } from './components/ExportBar'
 import { HistoryList } from './components/HistoryList'
@@ -26,13 +29,31 @@ interface AppProps {
 export default function App({ theme, onThemeToggle }: AppProps) {
   const { config, updateConfig } = useConfig()
   const isDemo = isDemoConfig(config)
-  const { state: recState, duration, audioBlob, error: recError, startRecording, stopRecording, maxDurationReached } = useAudioRecorder({ maxDurationMs: isDemo ? DEMO_MAX_RECORDING_MS : undefined })
+  const { state: recState, duration, audioBlob, error: recError, warning: recWarning, level, isClipping, isSilent, maxDurationReached, startRecording, stopRecording } = useAudioRecorder({ deviceId: config.audioDeviceId ?? undefined, maxDurationMs: isDemo ? DEMO_MAX_RECORDING_MS : undefined })
   const { state: txState, result: txResult, error: txError, transcribe } = useTranscription()
   const { state: tpState, cleanState, promptState, cleanedText, setCleanedText, promptText, error: tpError, process } = useTextProcessing()
   const { entries: historyEntries, addEntry, updateLatest, selectedEntry, selectEntry, clearHistory } = useHistory()
   const lastSavedTxRef = useRef<string | null>(null)
-  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(() => !isConfigured(config))
   const [showLatex, setShowLatex] = useState(false)
+  const [uploadedFile, setUploadedFile] = useState<Blob | null>(null)
+  const [currentTime, setCurrentTime] = useState(0)
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const lastAudioRef = useRef<Blob | null>(null)
+
+  const activePlayerBlob = audioBlob ?? uploadedFile
+  const audioUrl = useMemo(
+    () => (activePlayerBlob ? URL.createObjectURL(activePlayerBlob) : null),
+    [activePlayerBlob],
+  )
+  useEffect(() => () => { if (audioUrl) URL.revokeObjectURL(audioUrl) }, [audioUrl])
+
+  const seekTo = useCallback((t: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = t
+      audioRef.current.play()
+    }
+  }, [])
 
   const processingEnabled = config.enableCleaning || config.enablePrompt
 
@@ -47,12 +68,9 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   }, [config])
 
   useEffect(() => {
-    if (!isConfigured(config)) setSettingsOpen(true)
-  }, [])
-
-  useEffect(() => {
     if (audioBlob && config.sttProvider) {
       console.log('[WP:app] Audio blob ready, triggering transcription')
+      lastAudioRef.current = audioBlob
       transcribe(audioBlob, config.sttProvider.providerId, config.language)
     }
   }, [audioBlob])
@@ -122,12 +140,20 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   const handleFileUpload = useCallback(async (file: File) => {
     if (config.sttProvider) {
       selectEntry(null)
+      setUploadedFile(file)
       console.log('[WP:app] File upload, triggering transcription | name:', file.name, '| size:', file.size)
-      lastAudioRef.current = file  // always keep original for re-transcription
+      lastAudioRef.current = file
       const audioToProcess = isDemo ? await trimAudioToMaxDuration(file, DEMO_MAX_RECORDING_MS / 1000) : file
       transcribe(audioToProcess, config.sttProvider.providerId, config.language)
     }
   }, [config, transcribe, selectEntry, isDemo])
+
+  const handleReTranscribe = useCallback((code: string) => {
+    const blob = lastAudioRef.current
+    if (!blob || !config.sttProvider) return
+    recordCorrection(code)
+    transcribe(blob, config.sttProvider.providerId, code)
+  }, [config, transcribe])
 
   const handleStartRecording = useCallback(() => {
     selectEntry(null)
@@ -153,6 +179,19 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   const exportText = displayPromptText || displayCleanedText || displayRawText || ''
   const latexText = useMemo(() => exportText ? markdownToLatex(exportText) : null, [exportText])
   const hasResult = !!(displayRawText)
+  const segments = isViewingHistory ? undefined : txResult?.segments
+
+  const txDetectedLanguage = useMemo(() => {
+    if (txState !== 'done' || !txResult?.language) return null
+    return normalizeLanguage(txResult.language) ?? txResult.language
+  }, [txState, txResult])
+
+  const suggestedDefault = useMemo(() => {
+    if (!txDetectedLanguage) return null
+    const top = getTopCorrection()
+    if (!top || top === config.language) return null
+    return top
+  }, [txDetectedLanguage, config.language])
 
   const settingsButton = (
     <button
@@ -191,6 +230,9 @@ export default function App({ theme, onThemeToggle }: AppProps) {
               onFileUpload={handleFileUpload}
               isDemo={isDemo}
               maxDurationReached={maxDurationReached}
+              level={level}
+              isClipping={isClipping}
+              isSilent={isSilent}
             />
           </section>
 
@@ -201,6 +243,15 @@ export default function App({ theme, onThemeToggle }: AppProps) {
                 <span className="px-2 py-0.5 rounded-full bg-matcha-300/40 text-matcha-800 dark:text-matcha-300 text-[10px] font-clay-ui">STT</span>
               </div>
               <p className="text-xs text-text-secondary leading-relaxed whitespace-pre-wrap">{displayRawText}</p>
+            </div>
+          )}
+
+          {recWarning && (
+            <div className="animate-fade-in flex items-start gap-2 px-3 py-2 rounded-[8px] bg-lemon-400/10 border border-lemon-400/30">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-lemon-600 mt-0.5 flex-shrink-0">
+                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" x2="12" y1="9" y2="13" /><line x1="12" x2="12.01" y1="17" y2="17" />
+              </svg>
+              <p className="text-lemon-700 dark:text-lemon-400 text-xs leading-relaxed">{recWarning}</p>
             </div>
           )}
 
@@ -238,6 +289,13 @@ export default function App({ theme, onThemeToggle }: AppProps) {
               </span>
             )}
           </div>
+          {audioUrl && hasResult && !isViewingHistory && (
+            <AudioPlayer
+              src={audioUrl}
+              audioRef={audioRef}
+              onTimeUpdate={setCurrentTime}
+            />
+          )}
           <TranscriptionResult
             rawText={displayRawText}
             cleanedText={displayCleanedText}
@@ -252,6 +310,14 @@ export default function App({ theme, onThemeToggle }: AppProps) {
             onCleanedTextChange={!isViewingHistory ? setCleanedText : undefined}
             showLatex={showLatex}
             latexText={latexText}
+            segments={segments}
+            currentTime={currentTime}
+            onSeek={seekTo}
+            detectedLanguage={!isViewingHistory ? txDetectedLanguage ?? undefined : undefined}
+            availableLanguages={[...SUPPORTED_LANGUAGES]}
+            onLanguageCorrection={!isViewingHistory ? handleReTranscribe : undefined}
+            suggestedDefault={!isViewingHistory ? suggestedDefault : undefined}
+            onAcceptDefault={!isViewingHistory ? (code) => updateConfig({ language: code }) : undefined}
           />
           <ExportBar
             text={exportText}
@@ -259,6 +325,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
             disabled={!displayRawText}
             showLatex={showLatex}
             onToggleLatex={() => setShowLatex(prev => !prev)}
+            segments={segments}
           />
         </div>
 

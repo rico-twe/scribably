@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { ConnectionTestResult } from '../services/connection-test'
 import { ConnectionTestButton } from './ConnectionTestButton'
 
 describe('ConnectionTestButton', () => {
@@ -27,7 +28,7 @@ describe('ConnectionTestButton', () => {
   })
 
   it('shows loading state during test', async () => {
-    let resolveTest!: (v: any) => void
+    let resolveTest!: (v: ConnectionTestResult) => void
     const onTest = vi.fn().mockReturnValue(new Promise(r => { resolveTest = r }))
     render(<ConnectionTestButton onTest={onTest} />)
     await userEvent.click(screen.getByText(/test connection/i))
@@ -36,7 +37,7 @@ describe('ConnectionTestButton', () => {
   })
 
   it('disables button during test', async () => {
-    let resolveTest!: (v: any) => void
+    let resolveTest!: (v: ConnectionTestResult) => void
     const onTest = vi.fn().mockReturnValue(new Promise(r => { resolveTest = r }))
     render(<ConnectionTestButton onTest={onTest} />)
     await userEvent.click(screen.getByText(/test connection/i))

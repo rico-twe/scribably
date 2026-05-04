@@ -6,6 +6,8 @@ export interface AudioRecorderService {
   getState(): RecordingState;
   getDuration(): number;
   onStateChange(callback: (state: RecordingState) => void): () => void;
+  usedFallback: boolean;
+  getAnalyser(): AnalyserNode | null;
 }
 
 const MAX_DURATION_MS = 5 * 60 * 1000
@@ -21,25 +23,44 @@ function getSupportedMimeType(): string {
   throw new Error('No supported audio format found in this browser.')
 }
 
-function getMediaStream(): Promise<MediaStream> {
-  if (navigator.mediaDevices?.getUserMedia) {
-    return navigator.mediaDevices.getUserMedia({ audio: true })
+function getMediaStream(deviceId?: string): Promise<MediaStream> {
+  const constraints: MediaStreamConstraints = {
+    audio: deviceId ? { deviceId: { exact: deviceId } } : true,
   }
-  const legacyGetUserMedia =
-    (navigator as any).getUserMedia ||
-    (navigator as any).webkitGetUserMedia ||
-    (navigator as any).mozGetUserMedia
+  if (navigator.mediaDevices?.getUserMedia) {
+    return navigator.mediaDevices.getUserMedia(constraints)
+  }
+  type LegacyGetUserMedia = (
+    constraints: MediaStreamConstraints,
+    successCallback: (stream: MediaStream) => void,
+    errorCallback: (err: DOMException) => void
+  ) => void
+  const nav = navigator as Navigator & {
+    getUserMedia?: LegacyGetUserMedia
+    webkitGetUserMedia?: LegacyGetUserMedia
+    mozGetUserMedia?: LegacyGetUserMedia
+  }
+  const legacyGetUserMedia = nav.getUserMedia || nav.webkitGetUserMedia || nav.mozGetUserMedia
   if (legacyGetUserMedia) {
     return new Promise((resolve, reject) => {
-      legacyGetUserMedia.call(navigator, { audio: true }, resolve, reject)
+      legacyGetUserMedia.call(navigator, constraints, resolve, reject)
     })
   }
   throw new Error('Microphone access is not available in this browser.')
 }
 
-export function createAudioRecorder(): AudioRecorderService {
+export async function listAudioInputDevices(): Promise<{ deviceId: string; label: string }[]> {
+  const devices = await (navigator.mediaDevices?.enumerateDevices() ?? Promise.resolve([]))
+  return devices
+    .filter(d => d.kind === 'audioinput')
+    .map(d => ({ deviceId: d.deviceId, label: d.label || d.deviceId }))
+}
+
+export function createAudioRecorder(opts?: { deviceId?: string }): AudioRecorderService {
   let state: RecordingState = 'idle'
   let mediaRecorder: MediaRecorder | null = null
+  let audioContext: AudioContext | null = null
+  let analyser: AnalyserNode | null = null
   let chunks: Blob[] = []
   let startTime = 0
   let timeout: ReturnType<typeof setTimeout> | null = null
@@ -51,9 +72,35 @@ export function createAudioRecorder(): AudioRecorderService {
   }
 
   const service: AudioRecorderService = {
+    usedFallback: false,
+
     async start() {
       const mimeType = getSupportedMimeType()
-      const stream = await getMediaStream()
+      service.usedFallback = false
+      let stream: MediaStream
+      const deviceId = opts?.deviceId
+      if (deviceId) {
+        try {
+          stream = await getMediaStream(deviceId)
+        } catch (err) {
+          const name = err instanceof Error ? err.name : ''
+          if (name === 'OverconstrainedError' || name === 'NotFoundError') {
+            service.usedFallback = true
+            stream = await getMediaStream()
+          } else {
+            throw err
+          }
+        }
+      } else {
+        stream = await getMediaStream()
+      }
+
+      audioContext = new AudioContext()
+      analyser = audioContext.createAnalyser()
+      analyser.fftSize = 2048
+      analyser.smoothingTimeConstant = 0.3
+      audioContext.createMediaStreamSource(stream).connect(analyser)
+
       chunks = []
       mediaRecorder = new MediaRecorder(stream, { mimeType })
       mediaRecorder.ondataavailable = (e) => {
@@ -76,6 +123,9 @@ export function createAudioRecorder(): AudioRecorderService {
         mediaRecorder.onstop = () => {
           const blob = new Blob(chunks, { type: mediaRecorder!.mimeType })
           mediaRecorder!.stream.getTracks().forEach(t => t.stop())
+          audioContext?.close()
+          audioContext = null
+          analyser = null
           setState('idle')
           resolve(blob)
         }
@@ -89,6 +139,7 @@ export function createAudioRecorder(): AudioRecorderService {
       listeners.add(callback)
       return () => listeners.delete(callback)
     },
+    getAnalyser() { return analyser },
   }
 
   return service

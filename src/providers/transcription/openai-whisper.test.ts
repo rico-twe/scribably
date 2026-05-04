@@ -26,6 +26,41 @@ describe('OpenAI Whisper Transcription Provider', () => {
     )
   })
 
+  it('maps segments from verbose_json response', async () => {
+    (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        text: 'Hello World',
+        language: 'en',
+        duration: 2.0,
+        segments: [
+          { start: 0, end: 1.0, text: 'Hello', extra: 'ignored' },
+          { start: 1.0, end: 2.0, text: 'World', extra: 'ignored' },
+        ],
+      }),
+    })
+
+    const provider = createOpenAIWhisperProvider('sk-test')
+    const result = await provider.transcribe(new Blob(['audio']), { language: 'de' })
+
+    expect(result.segments).toEqual([
+      { start: 0, end: 1.0, text: 'Hello' },
+      { start: 1.0, end: 2.0, text: 'World' },
+    ])
+  })
+
+  it('returns undefined segments when not present in response', async () => {
+    (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: async () => ({ text: 'Hello World', language: 'en', duration: 2.0 }),
+    })
+
+    const provider = createOpenAIWhisperProvider('sk-test')
+    const result = await provider.transcribe(new Blob(['audio']), { language: 'de' })
+
+    expect(result.segments).toBeUndefined()
+  })
+
   it('uses whisper-1 model by default', async () => {
     (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: true,

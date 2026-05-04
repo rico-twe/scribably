@@ -1,4 +1,4 @@
-import { createAudioRecorder } from './audio'
+import { createAudioRecorder, listAudioInputDevices } from './audio'
 
 class MockMediaRecorder {
   state = 'inactive' as 'inactive' | 'recording'
@@ -8,8 +8,8 @@ class MockMediaRecorder {
   mimeType = 'audio/webm'
   stream: { getTracks: () => { stop: () => void }[] }
 
-  constructor(stream: MediaStream) {
-    this.stream = stream as any
+  constructor(stream: { getTracks: () => { stop: () => void }[] }) {
+    this.stream = stream
   }
   start() { this.state = 'recording' }
   stop() {
@@ -20,13 +20,39 @@ class MockMediaRecorder {
   static isTypeSupported(type: string) { return type === 'audio/webm' }
 }
 
+const mockGetUserMedia = vi.fn().mockResolvedValue({
+  getTracks: () => [{ stop: vi.fn() }],
+})
+
+const mockClose = vi.fn().mockResolvedValue(undefined)
+const mockConnectAnalyser = vi.fn()
+const mockGetByteTimeDomainData = vi.fn()
+const mockAnalyser = {
+  fftSize: 0 as number,
+  smoothingTimeConstant: 0 as number,
+  getByteTimeDomainData: mockGetByteTimeDomainData,
+}
+
+class MockAudioContext {
+  createAnalyser() { return mockAnalyser }
+  createMediaStreamSource() { return { connect: mockConnectAnalyser } }
+  close = mockClose
+}
+
 beforeAll(() => {
-  (globalThis as any).MediaRecorder = MockMediaRecorder
+  Object.assign(globalThis, {
+    MediaRecorder: MockMediaRecorder,
+    AudioContext: MockAudioContext,
+  })
   Object.defineProperty(globalThis.navigator, 'mediaDevices', {
     value: {
-      getUserMedia: vi.fn().mockResolvedValue({
-        getTracks: () => [{ stop: vi.fn() }],
-      }),
+      getUserMedia: mockGetUserMedia,
+      enumerateDevices: vi.fn().mockResolvedValue([
+        { kind: 'audioinput', deviceId: 'mic-1', label: 'Built-in Mic' },
+        { kind: 'audioinput', deviceId: 'mic-2', label: 'USB Mic' },
+        { kind: 'videoinput', deviceId: 'cam-1', label: 'Webcam' },
+        { kind: 'audiooutput', deviceId: 'spk-1', label: 'Speaker' },
+      ]),
     },
     writable: true,
   })
@@ -70,5 +96,70 @@ describe('AudioRecorderService', () => {
   it('rejects stop when not recording', async () => {
     const recorder = createAudioRecorder()
     await expect(recorder.stop()).rejects.toThrow('No active recording')
+  })
+})
+
+describe('AnalyserNode integration', () => {
+  beforeEach(() => { vi.clearAllMocks() })
+
+  it('getAnalyser returns null before start', () => {
+    const recorder = createAudioRecorder()
+    expect(recorder.getAnalyser()).toBeNull()
+  })
+
+  it('creates AudioContext and AnalyserNode on start', async () => {
+    const recorder = createAudioRecorder()
+    await recorder.start()
+    expect(recorder.getAnalyser()).toBe(mockAnalyser)
+    await recorder.stop()
+  })
+
+  it('closes AudioContext on stop', async () => {
+    const recorder = createAudioRecorder()
+    await recorder.start()
+    await recorder.stop()
+    expect(mockClose).toHaveBeenCalledOnce()
+  })
+
+  it('getAnalyser returns null after stop', async () => {
+    const recorder = createAudioRecorder()
+    await recorder.start()
+    await recorder.stop()
+    expect(recorder.getAnalyser()).toBeNull()
+  })
+})
+
+describe('deviceId support', () => {
+  beforeEach(() => { mockGetUserMedia.mockClear() })
+
+  it('passes exact deviceId constraint to getUserMedia', async () => {
+    const recorder = createAudioRecorder({ deviceId: 'mic-1' })
+    await recorder.start()
+    expect(mockGetUserMedia).toHaveBeenCalledWith({
+      audio: { deviceId: { exact: 'mic-1' } },
+    })
+    await recorder.stop()
+  })
+
+  it('falls back to default mic on OverconstrainedError', async () => {
+    const err = Object.assign(new Error('Overconstrained'), { name: 'OverconstrainedError' })
+    mockGetUserMedia
+      .mockRejectedValueOnce(err)
+      .mockResolvedValueOnce({ getTracks: () => [{ stop: vi.fn() }] })
+    const recorder = createAudioRecorder({ deviceId: 'missing-mic' })
+    await recorder.start()
+    expect(recorder.usedFallback).toBe(true)
+    expect(mockGetUserMedia).toHaveBeenCalledTimes(2)
+    expect(mockGetUserMedia).toHaveBeenLastCalledWith({ audio: true })
+    await recorder.stop()
+  })
+})
+
+describe('listAudioInputDevices', () => {
+  it('returns only audioinput devices', async () => {
+    const devices = await listAudioInputDevices()
+    expect(devices).toHaveLength(2)
+    expect(devices.every(d => d.deviceId && d.label)).toBe(true)
+    expect(devices.map(d => d.deviceId)).toEqual(['mic-1', 'mic-2'])
   })
 })
