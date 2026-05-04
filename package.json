@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "docx": "^9.6.1",
+    "escape-latex": "^1.2.0",
     "html5-qrcode": "^2.3.8",
     "marked": "^18.0.3",
     "qrcode.react": "^4.2.0",

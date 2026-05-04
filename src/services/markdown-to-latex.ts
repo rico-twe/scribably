@@ -1,16 +1,8 @@
 import { Lexer, type Token, type Tokens } from 'marked'
-
-const SPECIAL_CHARS = /([&%$#_{}])/g
-const TILDE = /~/g
-const CARET = /\^/g
-const BACKSLASH = /\\/g
+import escapeLatexString from 'escape-latex'
 
 function escapeLatex(text: string): string {
-  return text
-    .replace(BACKSLASH, '\\textbackslash{}')
-    .replace(SPECIAL_CHARS, '\\$1')
-    .replace(TILDE, '\\textasciitilde{}')
-    .replace(CARET, '\\textasciicircum{}')
+  return escapeLatexString(text)
 }
 
 function processInlineText(raw: string): string {
