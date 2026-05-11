@@ -39,3 +39,6 @@ AGENTS.md
 .vite/*
 
 .worktrees/*
+
+.claude-flow/*
+.mcp.json
