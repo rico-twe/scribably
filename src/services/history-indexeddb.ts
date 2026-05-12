@@ -87,12 +87,18 @@ export async function migrateFromLocalStorage(): Promise<number> {
     if (!raw) return 0
     const parsed: unknown[] = JSON.parse(raw)
     if (!Array.isArray(parsed) || parsed.length === 0) return 0
-    const entries = parsed.map(item => ({
-      ...item,
-      timestamp: typeof (item as { timestamp: number }).timestamp === 'number'
-        ? (item as { timestamp: number }).timestamp
-        : Date.now(),
-    })) as import('./history').HistoryEntry[]
+    const entries = parsed.map(item => {
+      const m = item as Record<string, unknown>
+      return {
+        id: (m.id as string) ?? crypto.randomUUID(),
+        timestamp: typeof m.timestamp === 'number' ? m.timestamp : Date.now(),
+        rawText: (m.rawText as string) ?? '',
+        language: (m.language as string) ?? 'de',
+        duration: (m.duration as number) ?? 0,
+        cleanedText: (m.cleanedText as string | null) ?? null,
+        promptText: (m.promptText as string | null) ?? null,
+      }
+    }) as import('./history').HistoryEntry[]
     await batchPut(entries)
     localStorage.removeItem('scribably-history')
     return entries.length

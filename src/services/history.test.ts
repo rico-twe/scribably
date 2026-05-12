@@ -1,20 +1,5 @@
-import { loadHistory, saveHistory, type HistoryEntry } from './history'
-
-const store: Record<string, string> = {}
-const localStorageMock = {
-  getItem: (key: string) => store[key] ?? null,
-  setItem: (key: string, value: string) => { store[key] = value },
-  removeItem: (key: string) => { delete store[key] },
-  clear: () => { Object.keys(store).forEach(k => delete store[k]) },
-}
-
-beforeAll(() => {
-  vi.stubGlobal('localStorage', localStorageMock)
-})
-
-afterAll(() => {
-  vi.unstubAllGlobals()
-})
+import { type HistoryEntry } from './history'
+import { rebuildIndex, addToIndex, removeFromIndex, search } from './history-search'
 
 function makeEntry(overrides: Partial<HistoryEntry> = {}): HistoryEntry {
   return {
@@ -29,33 +14,56 @@ function makeEntry(overrides: Partial<HistoryEntry> = {}): HistoryEntry {
   }
 }
 
-describe('history service', () => {
-  beforeEach(() => localStorageMock.clear())
-
-  it('returns empty array when nothing stored', () => {
-    expect(loadHistory()).toEqual([])
+describe('history integration', () => {
+  beforeEach(() => {
+    rebuildIndex([])
   })
 
-  it('round-trips entries through localStorage', () => {
-    const entries = [makeEntry(), makeEntry()]
-    saveHistory(entries)
-    expect(loadHistory()).toEqual(entries)
+  it('rebuildIndex + search: finds entries by rawText', () => {
+    const entries = [makeEntry({ rawText: 'Hallo Welt', timestamp: 1000 }), makeEntry({ rawText: 'Ciao mondo', timestamp: 2000 })]
+    rebuildIndex(entries)
+    const results = search('Hallo')
+    expect(results).toHaveLength(1)
+    expect(results[0].rawText).toBe('Hallo Welt')
   })
 
-  it('limits to 10 entries on save', () => {
-    const entries = Array.from({ length: 15 }, () => makeEntry())
-    saveHistory(entries)
-    expect(loadHistory()).toHaveLength(10)
+  it('rebuildIndex + search: finds entries by cleanedText', () => {
+    const entry = makeEntry({ rawText: 'Test', cleanedText: 'Test.', timestamp: 0 })
+    rebuildIndex([entry])
+    const results = search('Test.')
+    expect(results).toHaveLength(1)
   })
 
-  it('limits to 10 entries on load', () => {
-    const entries = Array.from({ length: 15 }, () => makeEntry())
-    localStorage.setItem('scribably-history', JSON.stringify(entries))
-    expect(loadHistory()).toHaveLength(10)
+  it('rebuildIndex + search: finds entries by promptText', () => {
+    const entry = makeEntry({ rawText: 'Text', promptText: 'Formatieren', timestamp: 0 })
+    rebuildIndex([entry])
+    const results = search('Formatieren')
+    expect(results).toHaveLength(1)
   })
 
-  it('returns empty array on corrupt JSON', () => {
-    localStorage.setItem('scribably-history', 'not json')
-    expect(loadHistory()).toEqual([])
+  it('addToIndex / removeFromIndex: update search results', () => {
+    const entry = makeEntry({ id: 'a', rawText: 'Eindeutig', timestamp: 0 })
+    addToIndex(entry)
+    expect(search('Eindeutig')).toHaveLength(1)
+    removeFromIndex('a')
+    expect(search('Eindeutig')).toHaveLength(0)
+  })
+
+  it('score multi-field matches higher', () => {
+    const entry1 = makeEntry({ id: 'x', rawText: 'Hello world', cleanedText: 'Hello world.', timestamp: 0 })
+    const entry2 = makeEntry({ id: 'y', rawText: 'Hello world', cleanedText: null, timestamp: 0 })
+    rebuildIndex([entry1, entry2])
+    const results = search('Hello world')
+    expect(results).toHaveLength(2)
+    // entry1 matches in rawText + cleanedText = score 2
+    // entry2 matches only in rawText = score 1
+    expect(results[0].id).toBe('x')
+  })
+
+  it('case-insensitive search', () => {
+    rebuildIndex([makeEntry({ rawText: 'HALLO WELT' })])
+    expect(search('hallo')).toHaveLength(1)
+    expect(search('HALLO')).toHaveLength(1)
+    expect(search('HaLlO')).toHaveLength(1)
   })
 })
