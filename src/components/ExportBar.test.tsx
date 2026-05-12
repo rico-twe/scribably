@@ -29,7 +29,7 @@ describe('ExportBar', () => {
 
   it('copy button calls clipboard API', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined)
-    Object.assign(navigator, { clipboard: { writeText } })
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, writable: false })
 
     render(<ExportBar {...defaultProps} text="copy me" />)
     await userEvent.click(screen.getByText(/^copy$/i))
