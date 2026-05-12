@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { search } from '../services/history-search'
 import type { HistoryEntry } from '../services/history'
 
 interface HistoryListProps {
@@ -8,6 +9,7 @@ interface HistoryListProps {
   currentRawText: string | null
   isViewingHistory: boolean
   onClear?: () => void
+  onRemove?: (id: string) => void
 }
 
 function formatRelativeTime(timestamp: number): string {
@@ -31,13 +33,20 @@ function truncate(text: string, maxLen: number): string {
   return text.slice(0, maxLen).trimEnd() + '\u2026'
 }
 
-export function HistoryList({ entries, selectedId, onSelect, currentRawText, isViewingHistory, onClear }: HistoryListProps) {
+export function HistoryList({ entries, selectedId, onSelect, currentRawText, isViewingHistory, onClear, onRemove }: HistoryListProps) {
   const [confirming, setConfirming] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const hasCurrentRecording = !!currentRawText
   if (entries.length === 0 && !hasCurrentRecording) return null
 
+  const filteredEntries = useMemo(() => {
+    if (searchQuery.trim().length < 2) return entries
+    return search(searchQuery)
+  }, [entries, searchQuery])
+
   const handleConfirm = () => {
     onClear?.()
+    setSearchQuery('')
     setConfirming(false)
   }
 
@@ -67,9 +76,41 @@ export function HistoryList({ entries, selectedId, onSelect, currentRawText, isV
       {/* Letzte Aufnahmen */}
       {entries.length > 0 && (
         <div>
-          <p className="label-uppercase text-text-tertiary mb-2">Recent recordings</p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="label-uppercase text-text-tertiary">Recent recordings</p>
+            {filteredEntries.length !== entries.length && (
+              <span className="text-[10px] text-text-tertiary font-clay-ui">
+                {filteredEntries.length} result
+              </span>
+            )}
+          </div>
+          {entries.length >= 3 && (
+            <div className="relative mb-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-tertiary pointer-events-none">
+                <circle cx="11" cy="11" r="8" /><line x1="21" x2="16.65" y1="21" y2="16.65" />
+              </svg>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="History durchsuchen…"
+                className="w-full pl-8 pr-3 py-1.5 rounded-[8px] border border-border-oat bg-bg-card text-[12px] text-text-secondary font-clay-ui placeholder:text-text-tertiary/60 focus:outline-none focus:border-matcha-500 focus:ring-1 focus:ring-matcha-500/30 transition-all"
+              />
+              {searchQuery.trim().length > 0 && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-secondary transition-colors"
+                  aria-label="Suche löschen"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          )}
           <div className="flex flex-col gap-2">
-            {entries.map(entry => {
+            {filteredEntries.map(entry => {
               const isSelected = entry.id === selectedId
               return (
                 <button
@@ -102,6 +143,20 @@ export function HistoryList({ entries, selectedId, onSelect, currentRawText, isV
                       <span className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-slushie-500/15 text-slushie-600 font-clay-ui">
                         prompt
                       </span>
+                    )}
+                    {onRemove && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onRemove(entry.id)
+                        }}
+                        className="ml-auto text-text-tertiary hover:text-pomegranate-400 transition-colors"
+                        aria-label="Eintrag löschen"
+                      >
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </button>
                     )}
                   </div>
                 </button>
