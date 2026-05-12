@@ -31,10 +31,9 @@ function patternsForLevel(level: RedactionLevel) {
 
 function findMatches(text: string, pattern: RegExp, type: string): PIIReplacement[] {
   const matches: PIIReplacement[] = []
-  while (true) {
-    pattern.lastIndex = 0
-    const match = pattern.exec(text)
-    if (!match) break
+  pattern.lastIndex = 0
+  let match: RegExpExecArray | null
+  while ((match = pattern.exec(text)) !== null) {
     matches.push({
       original: match[0],
       masked: MASKS[type],
