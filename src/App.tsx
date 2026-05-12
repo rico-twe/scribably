@@ -18,6 +18,8 @@ import { ExportBar } from './components/ExportBar'
 import { HistoryList } from './components/HistoryList'
 import { SettingsPanel } from './components/SettingsPanel'
 import { Layout } from './components/layout/Layout'
+import { FileDropZone } from './components/FileDropZone'
+import { useTranscriptionQueue } from './hooks/useTranscriptionQueue'
 
 type PipelineState = 'idle' | 'recording' | 'transcribing' | 'processing' | 'done' | 'error'
 
@@ -33,6 +35,20 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   const { state: txState, result: txResult, error: txError, transcribe } = useTranscription()
   const { state: tpState, cleanState, promptState, cleanedText, setCleanedText, promptText, error: tpError, process } = useTextProcessing()
   const { entries: historyEntries, addEntry, updateLatest, selectedEntry, selectEntry, clearHistory } = useHistory()
+  const queue = useTranscriptionQueue({
+    addToHistory: (data) => addEntry(data),
+    onEntryComplete: (_entry) => {
+      lastAudioRef.current = _entry.file
+      selectEntry(null)
+      setUploadedFile(_entry.file)
+    },
+    onEntryFail: (entry, error) => {
+      console.log('[WP:app] Queue entry failed:', entry.file.name, error)
+    },
+    onQueueComplete: () => {
+      console.log('[WP:app] Queue processing complete')
+    },
+  })
   const lastSavedTxRef = useRef<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(() => !isConfigured(config))
   const [showLatex, setShowLatex] = useState(false)
@@ -74,6 +90,17 @@ export default function App({ theme, onThemeToggle }: AppProps) {
       transcribe(audioBlob, config.sttProvider.providerId, config.language)
     }
   }, [audioBlob])
+
+  // Auto-start queue when provider is available
+  useEffect(() => {
+    if (config.sttProvider && queue.entries.length > 0) {
+      const hasPending = queue.entries.some(e => e.status === 'pending' || e.status === 'paused')
+      if (hasPending) {
+        console.log('[WP:app] Starting queue dequeue for', queue.entries.filter(e => e.status === 'pending' || e.status === 'paused').length, 'entries')
+        queue.dequeue(config.sttProvider.providerId, config.language)
+      }
+    }
+  }, [config.sttProvider, config.language, queue.entries.length])
 
   useEffect(() => {
     if (txState === 'done' && txResult?.text) {
@@ -233,6 +260,51 @@ export default function App({ theme, onThemeToggle }: AppProps) {
               level={level}
               isClipping={isClipping}
               isSilent={isSilent}
+            />
+          </section>
+
+          {/* Batch file upload queue */}
+          <section className="bg-bg-card/80 backdrop-blur-sm border border-border-oat rounded-[24px] shadow-clay p-5">
+            <div className="flex items-center justify-between mb-3">
+              <p className="label-uppercase text-text-tertiary">File Upload</p>
+              {queue.entries.length > 0 && (
+                <span className="px-2 py-0.5 rounded-full bg-ube-300/40 text-ube-800 dark:text-ube-300 text-[10px] font-clay-ui">
+                  {queue.entries.length}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2 mb-2">
+              {queue.isPaused && !queue.isProcessing && (
+                <button
+                  onClick={queue.resumeQueue}
+                  className="px-3 py-1.5 rounded-full text-[12px] font-clay-ui bg-matcha-600 text-white hover:bg-matcha-700 transition-colors flex items-center gap-1.5"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
+                  Fortsetzen
+                </button>
+              )}
+              {!queue.isPaused && (
+                <button
+                  onClick={queue.pauseQueue}
+                  className="px-3 py-1.5 rounded-full text-[12px] font-clay-ui bg-bg-card border border-border-oat text-text-secondary hover:bg-text-tertiary/10 transition-colors flex items-center gap-1.5"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="6" y="4" width="4" height="16" />
+                    <rect x="14" y="4" width="4" height="16" />
+                  </svg>
+                  Pause
+                </button>
+              )}
+            </div>
+            <FileDropZone
+              onFilesDrop={queue.enqueue}
+              queueEntries={queue.entries}
+              onRemove={queue.removeEntry}
+              onReorder={queue.reorderEntries}
+              isPaused={queue.isPaused}
+              isProcessing={queue.isProcessing}
             />
           </section>
 
