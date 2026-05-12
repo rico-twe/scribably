@@ -166,7 +166,7 @@ describe('SettingsPanel', () => {
     })
 
     it('shows active preset with highlight styling', async () => {
-      const config = { ...DEFAULT_CONFIG, activePreset: 'claude-prompt' }
+      const config: AppConfig = { ...DEFAULT_CONFIG, activePreset: 'claude-prompt' }
       render(<SettingsPanel {...defaultProps} config={config} />)
       expect(screen.getByText('Claude Prompt')).toBeInTheDocument()
     })
