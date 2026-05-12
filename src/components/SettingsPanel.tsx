@@ -8,7 +8,18 @@ import { exportConfigToBase64, importConfigFromBase64, clearConfig } from '../se
 import { isDemoConfig } from '../services/demo-config'
 import { testSTTConnection, testLLMConnection } from '../services/connection-test'
 import { listAudioInputDevices } from '../services/audio'
-import type { AppConfig } from '../services/config-types'
+import type { AppConfig, PresetType } from '../services/config-types'
+import {
+  BUILTIN_PRESET_ORDER,
+  PRESET_LABELS,
+  applyPreset,
+  applyCustomPreset,
+  saveCustomPreset,
+  deleteCustomPreset,
+  listCustomPresets,
+  getPresetDescription,
+  type CustomPreset,
+} from '../services/presets'
 import { SUPPORTED_LANGUAGES } from '../services/languages'
 
 const STT_PROVIDERS = [
@@ -31,6 +42,172 @@ interface SettingsPanelProps {
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <label className="block label-uppercase text-text-tertiary mb-2">{children}</label>
+  )
+}
+
+interface PresetSelectorProps {
+  config: AppConfig;
+  onConfigChange: (updates: Partial<AppConfig>) => void;
+}
+
+function PresetSelector({ config, onConfigChange }: PresetSelectorProps) {
+  const [showSaveModal, setShowSaveModal] = useState(false)
+  const [customName, setCustomName] = useState('')
+  const [customPresets, _setCustomPresets] = useState<CustomPreset[]>(() => listCustomPresets())
+  const [showError, setShowError] = useState(false)
+
+  const setCustomPresets = (updater: CustomPreset[] | ((prev: CustomPreset[]) => CustomPreset[])) => {
+    const next = typeof updater === 'function' ? updater(listCustomPresets()) : updater
+    _setCustomPresets(next)
+  }
+
+  const handlePresetClick = (type: PresetType) => {
+    onConfigChange(applyPreset(type, config))
+  }
+
+  const handleCustomClick = (preset: CustomPreset) => {
+    onConfigChange(applyCustomPreset(preset, config))
+  }
+
+  const handleDelete = (name: string) => {
+    deleteCustomPreset(name)
+    setCustomPresets(prev => prev.filter(p => p.name !== name))
+    if (config.activePreset === undefined && customPresets.some(p => p.name === name)) {
+      onConfigChange({ activePreset: undefined })
+    }
+  }
+
+  const handleSave = () => {
+    if (!customName.trim()) {
+      setShowError(true)
+      return
+    }
+    saveCustomPreset(customName.trim(), config)
+    setCustomPresets(listCustomPresets())
+    setCustomName('')
+    setShowSaveModal(false)
+    setShowError(false)
+  }
+
+  const isInheritedPreset = config.activePreset != null && BUILTIN_PRESET_ORDER.includes(config.activePreset)
+
+  return (
+    <section>
+      <SectionLabel>Quick presets</SectionLabel>
+      <div className="flex flex-wrap gap-1.5">
+        {BUILTIN_PRESET_ORDER.map(type => {
+          const isActive = config.activePreset === type
+          return (
+            <button
+              key={type}
+              type="button"
+              title={getPresetDescription(type)}
+              className={`
+                px-2.5 py-1 text-xs rounded-[6px] transition-colors font-clay-ui
+                ${isActive
+                  ? 'border border-lemon-400/60 bg-lemon-400/15 text-lemon-500'
+                  : 'border border-border-oat text-text-tertiary hover:text-text-secondary hover:border-border-oat-light'
+                }
+              `}
+              onClick={() => handlePresetClick(type)}
+            >
+              {PRESET_LABELS[type]}
+            </button>
+          )
+        })}
+      </div>
+
+      {customPresets.length > 0 && (
+        <>
+          <p className="text-[11px] text-text-tertiary mt-2 mb-1">Custom</p>
+          <div className="flex flex-wrap gap-1.5">
+            {customPresets.map(preset => {
+              const isActive = !isInheritedPreset &&
+                config.enableCleaning === preset.enableCleaning &&
+                config.enablePrompt === preset.enablePrompt &&
+                config.customPrompt === preset.customPrompt
+              return (
+                <div key={preset.name} className="flex items-center gap-0.5">
+                  <button
+                    type="button"
+                    className={`
+                      px-2.5 py-1 text-xs rounded-[6px] transition-colors font-clay-ui truncate max-w-[120px]
+                      ${isActive
+                        ? 'border border-lemon-400/60 bg-lemon-400/15 text-lemon-500'
+                        : 'border border-border-oat text-text-tertiary hover:text-text-secondary hover:border-border-oat-light'
+                      }
+                    `}
+                    onClick={() => handleCustomClick(preset)}
+                    title={preset.name}
+                  >
+                    {preset.name}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(preset.name)}
+                    className="text-text-tertiary hover:text-red-400 text-[10px] px-1 transition-colors"
+                    title="Delete preset"
+                    aria-label={`Delete preset ${preset.name}`}
+                  >
+                    ×
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        </>
+      )}
+
+      <button
+        type="button"
+        onClick={() => setShowSaveModal(true)}
+        className="mt-2 text-xs text-text-tertiary hover:text-text-secondary underline underline-offset-2 transition-colors font-clay-ui"
+      >
+        + Save current setup as custom preset
+      </button>
+
+      {/* Save modal */}
+      {showSaveModal && createPortal(
+        <>
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-[60] transition-opacity duration-200"
+            onClick={() => { setShowSaveModal(false); setShowError(false) }}
+          />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[70] bg-bg-card border border-border-oat rounded-[12px] p-5 w-[300px] shadow-xl">
+            <h3 className="text-sm font-clay-heading text-text-primary mb-3">Save custom preset</h3>
+            <input
+              type="text"
+              value={customName}
+              onChange={e => { setCustomName(e.target.value); setShowError(false) }}
+              onKeyDown={e => { if (e.key === 'Enter') handleSave() }}
+              placeholder="Preset name"
+              autoFocus
+              className={`w-full bg-bg-page rounded-[4px] px-3 py-2 text-sm text-text-primary border focus:outline focus:outline-2 focus:outline-[rgb(20,110,245)] transition-colors ${showError ? 'border-red-400' : 'border-border-input'}`}
+            />
+            {showError && (
+              <p className="text-xs text-red-400 mt-1">Name is required.</p>
+            )}
+            <div className="flex justify-end gap-2 mt-3">
+              <button
+                type="button"
+                onClick={() => { setShowSaveModal(false); setShowError(false) }}
+                className="px-3 py-1.5 text-xs font-clay-ui text-text-tertiary hover:text-text-secondary transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSave}
+                className="px-3 py-1.5 text-xs font-clay-ui text-bg-page bg-lemon-400 hover:bg-lemon-500 rounded-[4px] transition-colors"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </>,
+        document.body,
+      )}
+    </section>
   )
 }
 
@@ -140,6 +317,12 @@ export function SettingsPanel({ isOpen, onClose, config, onConfigChange }: Setti
               <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors">Generate prompt</span>
             </label>
           </section>
+
+          {/* Divider */}
+          <div className="border-t border-border-oat" />
+
+          {/* Preset Selector */}
+          <PresetSelector config={config} onConfigChange={onConfigChange} />
 
           {/* Divider */}
           <div className="border-t border-border-oat" />

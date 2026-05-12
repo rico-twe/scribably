@@ -6,6 +6,14 @@ export interface ProviderConfig {
   isDemo?: boolean;
 }
 
+export type PresetType =
+  | 'journal-entry'
+  | 'claude-prompt'
+  | 'email-draft'
+  | 'meeting-memo'
+  | 'commit-message'
+  | 'raw'
+
 export interface AppConfig {
   sttProvider: ProviderConfig | null;
   llmProvider: ProviderConfig | null;
@@ -14,6 +22,7 @@ export interface AppConfig {
   enableCleaning?: boolean;
   enablePrompt?: boolean;
   audioDeviceId?: string;
+  activePreset?: PresetType;
 }
 
 export const DEFAULT_CONFIG: AppConfig = {
