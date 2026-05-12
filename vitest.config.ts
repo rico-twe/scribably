@@ -6,6 +6,7 @@ export default defineConfig({
     globals: true,
     include: ['src/**/*.test.{ts,tsx}'],
     exclude: ['.worktrees/**'],
+    setupFiles: ['./src/setupTests.ts'],
   },
   poolOptions: {
     forks: {
