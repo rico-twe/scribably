@@ -30,7 +30,7 @@ export default function App({ theme, onThemeToggle }: AppProps) {
   const { config, updateConfig } = useConfig()
   const isDemo = isDemoConfig(config)
   const { state: recState, duration, audioBlob, error: recError, warning: recWarning, level, isClipping, isSilent, maxDurationReached, startRecording, stopRecording } = useAudioRecorder({ deviceId: config.audioDeviceId ?? undefined, maxDurationMs: isDemo ? DEMO_MAX_RECORDING_MS : undefined })
-  const { state: txState, result: txResult, error: txError, transcribe } = useTranscription()
+  const { state: txState, result: txResult, error: txError, chunksUsed, transcribe } = useTranscription()
   const { state: tpState, cleanState, promptState, cleanedText, setCleanedText, promptText, error: tpError, process } = useTextProcessing()
   const { entries: historyEntries, addEntry, updateLatest, selectedEntry, selectEntry, clearHistory } = useHistory()
   const lastSavedTxRef = useRef<string | null>(null)
