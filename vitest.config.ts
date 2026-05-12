@@ -5,12 +5,11 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     include: ['src/**/*.test.{ts,tsx}'],
-    exclude: ['.worktrees/**'],
     setupFiles: ['./src/setupTests.ts'],
   },
   poolOptions: {
-    forks: {
-      singleFork: true,
+    threads: {
+      singleThread: true,
     },
   },
 })
