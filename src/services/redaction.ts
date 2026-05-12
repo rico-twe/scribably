@@ -18,7 +18,7 @@ const MASKS: Record<string, string> = {
 
 function patternsForLevel(level: RedactionLevel) {
   const all = [
-    { type: 'email', pattern: /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g },
+    { type: 'email', pattern: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g },
     { type: 'phone', pattern: /(\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}/g },
     { type: 'iban', pattern: /\b[A-Z]{2}\d{2,30}\b/g },
     { type: 'credit_card', pattern: /\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b/g },
@@ -31,7 +31,6 @@ function patternsForLevel(level: RedactionLevel) {
 
 function findMatches(text: string, pattern: RegExp, type: string): PIIReplacement[] {
   const matches: PIIReplacement[] = []
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     pattern.lastIndex = 0
     const match = pattern.exec(text)
