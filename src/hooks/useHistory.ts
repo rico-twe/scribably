@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { loadHistory, saveHistory, clearHistory as delAll, deleteEntry } from '../services/history'
-import { addToIndex, removeFromIndex, rebuildIndex } from '../services/history-search'
+import { removeFromIndex, rebuildIndex } from '../services/history-search'
 import { migrateFromLocalStorage } from '../services/history-indexeddb'
 import type { HistoryEntry } from '../services/history'
 

@@ -37,12 +37,12 @@ export function HistoryList({ entries, selectedId, onSelect, currentRawText, isV
   const [confirming, setConfirming] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const hasCurrentRecording = !!currentRawText
-  if (entries.length === 0 && !hasCurrentRecording) return null
-
   const filteredEntries = useMemo(() => {
     if (searchQuery.trim().length < 2) return entries
     return search(searchQuery)
   }, [entries, searchQuery])
+
+  if (entries.length === 0 && !hasCurrentRecording) return null
 
   const handleConfirm = () => {
     onClear?.()
