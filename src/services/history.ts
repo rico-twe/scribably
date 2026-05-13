@@ -1,4 +1,4 @@
-import { getAll, batchPut, clear, del, count } from './indexeddb'
+import { getAll, batchPut, clear, del } from './indexeddb'
 
 export interface HistoryEntry {
   id: string
@@ -28,8 +28,4 @@ export async function clearHistory(): Promise<void> {
 
 export async function deleteEntry(id: string): Promise<void> {
   await del(id)
-}
-
-export async function count(): Promise<number> {
-  return count()
 }
