@@ -1,3 +1,5 @@
+import { getAll, batchPut, clear, del } from './indexeddb'
+
 export interface HistoryEntry {
   id: string
   timestamp: number
@@ -8,20 +10,22 @@ export interface HistoryEntry {
   promptText: string | null
 }
 
-const STORAGE_KEY = 'scribably-history'
-const MAX_ENTRIES = 10
-
-export function loadHistory(): HistoryEntry[] {
+export async function loadHistory(): Promise<HistoryEntry[]> {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed.slice(0, MAX_ENTRIES) : []
+    return (await getAll<HistoryEntry>()).sort((a, b) => b.timestamp - a.timestamp)
   } catch {
     return []
   }
 }
 
-export function saveHistory(entries: HistoryEntry[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries.slice(0, MAX_ENTRIES)))
+export async function saveHistory(entries: HistoryEntry[]): Promise<void> {
+  await batchPut(entries)
+}
+
+export async function clearHistory(): Promise<void> {
+  await clear()
+}
+
+export async function deleteEntry(id: string): Promise<void> {
+  await del(id)
 }
