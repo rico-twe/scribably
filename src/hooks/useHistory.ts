@@ -1,6 +1,6 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { loadHistory, saveHistory, clearHistory as delAll, deleteEntry } from '../services/history'
-import { addToIndex, removeFromIndex } from '../services/history-search'
+import { addToIndex, removeFromIndex, rebuildIndex } from '../services/history-search'
 import { migrateFromLocalStorage } from '../services/history-indexeddb'
 import type { HistoryEntry } from '../services/history'
 
@@ -16,7 +16,6 @@ export function useHistory() {
     let cancelled = false
     ;(async () => {
       try {
-        // Migrate localStorage → IndexedDB on first load
         const migrated = await migrateFromLocalStorage()
         if (migrated > 0) {
           console.log(`[WP:history] Migrated ${migrated} entries from localStorage`)
@@ -25,9 +24,7 @@ export function useHistory() {
         const history = await loadHistory()
         if (!cancelled) {
           setEntries(history)
-          for (const entry of history) {
-            addToIndex(entry)
-          }
+          rebuildIndex(history)
         }
       } catch (err) {
         console.error('[WP:history] Failed to load history:', err)
@@ -38,9 +35,11 @@ export function useHistory() {
   }, [])
 
   const persist = useCallback(async (next: HistoryEntry[]) => {
-    await saveHistory(next)
-    for (const entry of next) {
-      addToIndex(entry)
+    try {
+      await saveHistory(next)
+      rebuildIndex(next)
+    } catch (err) {
+      console.error('[WP:history] Failed to persist:', err)
     }
   }, [])
 

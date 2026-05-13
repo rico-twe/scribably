@@ -80,7 +80,7 @@ export function HistoryList({ entries, selectedId, onSelect, currentRawText, isV
             <p className="label-uppercase text-text-tertiary">Recent recordings</p>
             {filteredEntries.length !== entries.length && (
               <span className="text-[10px] text-text-tertiary font-clay-ui">
-                {filteredEntries.length} result
+                {filteredEntries.length} {filteredEntries.length === 1 ? 'result' : 'results'}
               </span>
             )}
           </div>
