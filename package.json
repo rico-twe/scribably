@@ -31,14 +31,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "docx": "^9.7.0",
+    "docx": "^9.7.1",
     "escape-latex": "^1.2.0",
     "flexsearch": "^0.8.212",
     "html5-qrcode": "^2.3.8",
     "marked": "^18.0.4",
     "qrcode.react": "^4.2.0",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -48,7 +48,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/flexsearch": "^0.7.42",
     "@types/node": "^25.9.1",
-    "@types/react": "^19.2.15",
+    "@types/react": "^19.2.16",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
     "eslint": "^10.4.0",
@@ -60,7 +60,7 @@
     "tailwindcss": "^4.2.2",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.59.3",
-    "vite": "^8.0.14",
-    "vitest": "^4.1.7"
+    "vite": "^8.0.16",
+    "vitest": "^4.1.8"
   }
 }
