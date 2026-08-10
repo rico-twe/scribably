@@ -31,36 +31,36 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "docx": "^9.7.0",
+    "docx": "^9.7.1",
     "escape-latex": "^1.2.0",
     "flexsearch": "^0.8.212",
     "html5-qrcode": "^2.3.8",
-    "marked": "^18.0.4",
+    "marked": "^18.0.9",
     "qrcode.react": "^4.2.0",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@tailwindcss/vite": "^4.3.0",
+    "@tailwindcss/vite": "^4.3.3",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.1",
+    "@testing-library/user-event": "^14.6.3",
     "@types/flexsearch": "^0.7.42",
     "@types/node": "^25.9.1",
-    "@types/react": "^19.2.15",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.0.5",
     "eslint": "^10.5.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
-    "globals": "^17.6.0",
-    "happy-dom": "^20.9.0",
+    "globals": "^17.9.0",
+    "happy-dom": "^20.11.1",
     "jsdom": "^29.1.1",
     "tailwindcss": "^4.2.2",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.61.0",
-    "vite": "^8.0.14",
-    "vitest": "^4.1.7"
+    "vite": "^8.2.1",
+    "vitest": "^4.1.10"
   }
 }
